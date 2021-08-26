@@ -65,6 +65,10 @@ test {
     finalizedBy jacocoTestCoverageVerification
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
 jacocoTestReport {
     dependsOn test
 }
