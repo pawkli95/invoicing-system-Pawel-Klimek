@@ -18,14 +18,14 @@ class AppTest extends Specification {
     }
 
     def "should start aplication"() {
-            setup:
-            def app = new App()
+        setup:
+        def app = new App()
 
-            when:
-            def result = app.main()
+        when:
+        def result = app.main()
 
-            then:
-            result == null
-        }
+        then:
+        result == null
     }
+}
 
