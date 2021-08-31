@@ -1,10 +1,7 @@
 package pl.futurecollars.invoicing.model;
 
 import java.math.BigDecimal;
-<<<<<<< HEAD
 import java.math.RoundingMode;
-=======
->>>>>>> origin/TASK2
 import lombok.Data;
 
 @Data
