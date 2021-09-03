@@ -51,12 +51,12 @@ class InMemoryDatabaseTest extends Specification {
         returnedInvoice == invoice
     }
 
-    def "should return null when there is no invoice with this id"() {
+    def "should throw exception when there is no invoice with this id"() {
         when: "we ask database for an nonexistent invoice"
         def returnedInvoice = inMemoryDatabase.getById(UUID.randomUUID());
 
-        then: "null is returned"
-        returnedInvoice == null
+        then: "exception is thrwon"
+        thrown(NoSuchElementException)
     }
 
     def "should return list of all invoices from database"() {
@@ -107,5 +107,13 @@ class InMemoryDatabaseTest extends Specification {
         then: "invoice is deleted"
         inMemoryDatabase.database.isEmpty()
         wasDeleted
+    }
+
+    def "should throw exception if when deleting nonexistent invoice"() {
+        when: "we ask database to delete nonexistent invoice"
+        def returnedInvoice = inMemoryDatabase.delete(UUID.randomUUID())
+
+        then: "exception is thrown"
+        thrown(NoSuchElementException)
     }
 }

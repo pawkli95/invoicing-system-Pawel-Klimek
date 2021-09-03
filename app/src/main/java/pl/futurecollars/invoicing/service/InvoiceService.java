@@ -42,4 +42,3 @@ public class InvoiceService {
         return database.delete(id);
     }
 }
-

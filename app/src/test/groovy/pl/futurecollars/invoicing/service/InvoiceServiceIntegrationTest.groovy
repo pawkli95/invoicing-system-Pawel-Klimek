@@ -42,9 +42,12 @@ class InvoiceServiceIntegrationTest extends Specification {
         returnedInvoice == invoice
     }
 
-    def "should get empty optional when id is not used"() {
-        expect:
-        invoiceService.getById(UUID.randomUUID()) == null
+    def "should throw exception when id is not used"() {
+        when:"we ask invoice service to get nonexistent invoice"
+        def returnedInvoice = invoiceService.getById(UUID.randomUUID())
+
+        then:"exception is thrown"
+        thrown(NoSuchElementException)
     }
 
     def "should get list of invoices"() {
@@ -100,5 +103,13 @@ class InvoiceServiceIntegrationTest extends Specification {
 
         then: "database is empty"
         database.getAll().isEmpty()
+    }
+
+    def "should throw exception when deleting nonexistent invoice"() {
+        when:"we ask invoice service to delete nonexistent invoice"
+        invoiceService.deleteInvoice(UUID.randomUUID())
+
+        then: "exception is thrown"
+        thrown(NoSuchElementException)
     }
 }

@@ -16,4 +16,3 @@ public interface Database {
 
     boolean delete(UUID id);
 }
-
