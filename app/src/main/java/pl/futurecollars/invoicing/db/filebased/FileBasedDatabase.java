@@ -24,8 +24,8 @@ public class FileBasedDatabase implements Database {
 
     public FileBasedDatabase(JsonService jsonService) {
         this.jsonService = jsonService;
-        this.jsonFileService = new FileService("invoices.json");
-        this.idsFileService = new FileService("ids.txt");
+        this.jsonFileService = new FileService("app/invoices.json");
+        this.idsFileService = new FileService("app/ids.txt");
     }
 
     @Override

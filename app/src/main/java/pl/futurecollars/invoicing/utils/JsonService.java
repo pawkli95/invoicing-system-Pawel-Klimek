@@ -15,7 +15,6 @@ public class JsonService {
     public JsonService() {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     public String toJsonString(Invoice object) {
@@ -23,8 +22,8 @@ public class JsonService {
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public Invoice toObject(String jsonString) {
@@ -32,7 +31,7 @@ public class JsonService {
             return mapper.readValue(jsonString, Invoice.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }

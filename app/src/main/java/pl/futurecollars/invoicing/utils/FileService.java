@@ -17,11 +17,10 @@ public class FileService {
 
     public void write(String string) {
         try {
-            FileUtils.write(file, string + "delimeter \n", "UTF-8", true);
+            FileUtils.write(file, string + "\n", "UTF-8", true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void eraseFile() {
@@ -34,14 +33,10 @@ public class FileService {
 
     public List<String> read() {
         try {
-            String string = FileUtils.readFileToString(file, "UTF-8");
-            if (string.isEmpty()) {
-                return Collections.emptyList();
-            }
-            return Arrays.asList(string.split("delimeter \n"));
+            return FileUtils.readLines(file, "UTF-8");
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }

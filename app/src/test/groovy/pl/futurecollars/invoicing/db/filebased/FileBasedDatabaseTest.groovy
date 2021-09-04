@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
-import pl.futurecollars.invoicing.utils.FileService
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 import java.time.LocalDateTime
@@ -35,13 +34,17 @@ class FileBasedDatabaseTest extends Specification {
         FileUtils.write(new File(idTest2), "", "UTF-8", false)
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         jsonString = mapper.writeValueAsString(invoice)
+    }
+
+    def cleaup() {
+        fileBasedDatabase.getJsonFileService().eraseFile()
+        fileBasedDatabase.getIdsFileService().eraseFile()
     }
 
     def "should save invoice to file"() {
         given:
-        FileUtils.write(new File(jsonTest2), jsonString + "delimeter \n", "UTF-8")
+        FileUtils.write(new File(jsonTest2), jsonString + "\n", "UTF-8")
 
         when:
         fileBasedDatabase.save(invoice)
@@ -52,8 +55,8 @@ class FileBasedDatabaseTest extends Specification {
 
     def "should get invoice by id"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString + "delimeter \n", "UtF-8");
-        FileUtils.write(new File(idTest1),invoice.getId().toString() + "delimeter \n", "UTF-8");
+        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UtF-8");
+        FileUtils.write(new File(idTest1),invoice.getId().toString() + "\n", "UTF-8");
 
         when:
         Invoice returnedInvoice = fileBasedDatabase.getById(invoice.getId())
@@ -91,12 +94,12 @@ class FileBasedDatabaseTest extends Specification {
 
     def "should update invoice"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString + "delimeter \n", "UTF-8")
-        FileUtils.write(new File(idTest1), invoice.getId().toString() + "delimeter \n", "UTF-8")
+        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UTF-8")
+        FileUtils.write(new File(idTest1), invoice.getId().toString() + "\n", "UTF-8")
         Invoice updatedInvoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
         updatedInvoice.setId(invoice.getId())
         String updatedJsonString = mapper.writeValueAsString(updatedInvoice)
-        FileUtils.write(new File(jsonTest2), updatedJsonString + "delimeter \n", "UTF-8")
+        FileUtils.write(new File(jsonTest2), updatedJsonString + "\n", "UTF-8")
 
         when:
         fileBasedDatabase.update(updatedInvoice)
