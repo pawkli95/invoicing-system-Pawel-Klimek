@@ -5,21 +5,27 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.Data;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
+@Data
+@Component
+@Primary
 public class FileBasedDatabase implements Database {
 
     private final JsonService jsonService;
     private final FileService jsonFileService;
     private final FileService idsFileService;
 
-    public FileBasedDatabase(JsonService jsonService, FileService jsonFileService, FileService idsFileService) {
+    public FileBasedDatabase(JsonService jsonService) {
         this.jsonService = jsonService;
-        this.jsonFileService = jsonFileService;
-        this.idsFileService = idsFileService;
+        this.jsonFileService = new FileService("invoices.json");
+        this.idsFileService = new FileService("ids.txt");
     }
 
     @Override

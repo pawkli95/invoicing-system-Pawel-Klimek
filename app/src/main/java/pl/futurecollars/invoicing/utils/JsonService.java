@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.stereotype.Component;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Component
 public class JsonService {
 
     private final ObjectMapper mapper = new ObjectMapper();

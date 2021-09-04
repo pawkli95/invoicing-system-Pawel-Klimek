@@ -15,29 +15,24 @@ import java.time.LocalDateTime
 class FileBasedDatabaseTest extends Specification {
 
     JsonService jsonService
-    FileService jsonFileService
-    FileService idsFileService
     FileBasedDatabase fileBasedDatabase
     Company from = new Company(1L, "address1")
     Company to = new Company(2L, "address2")
     Invoice invoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<>())
     ObjectMapper mapper = new ObjectMapper();
     String jsonString;
-    String jsonTest1 = "jsonTest1.txt"
+    String jsonTest1 = "invoices.json"
     String jsonTest2 = "jsonTest2.txt"
-    String idTest1 = "idTest1.txt"
+    String idTest1 = "ids.txt"
     String idTest2 = "idTest2.txt"
 
     def setup() {
         jsonService = new JsonService()
-        jsonFileService = new FileService(jsonTest1)
-        idsFileService = new FileService(idTest1)
-        fileBasedDatabase = new FileBasedDatabase(jsonService, jsonFileService, idsFileService)
-        jsonFileService.eraseFile()
-        idsFileService.eraseFile()
+        fileBasedDatabase = new FileBasedDatabase(jsonService)
+        fileBasedDatabase.getJsonFileService().eraseFile()
+        fileBasedDatabase.getIdsFileService().eraseFile()
         FileUtils.write(new File(jsonTest2), "", "UTF-8", false)
         FileUtils.write(new File(idTest2), "", "UTF-8", false)
-        fileBasedDatabase = new FileBasedDatabase(jsonService, jsonFileService, idsFileService)
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
