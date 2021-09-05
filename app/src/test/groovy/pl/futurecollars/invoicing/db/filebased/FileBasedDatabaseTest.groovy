@@ -55,7 +55,7 @@ class FileBasedDatabaseTest extends Specification {
 
     def "should get invoice by id"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UtF-8");
+        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UTF-8");
         FileUtils.write(new File(idTest1),invoice.getId().toString() + "\n", "UTF-8");
 
         when:

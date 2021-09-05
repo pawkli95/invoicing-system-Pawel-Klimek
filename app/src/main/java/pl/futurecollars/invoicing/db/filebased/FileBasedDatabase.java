@@ -7,14 +7,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Data;
 import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
 @Data
-@Component
+@Repository
 @Primary
 public class FileBasedDatabase implements Database {
 
@@ -24,8 +24,8 @@ public class FileBasedDatabase implements Database {
 
     public FileBasedDatabase(JsonService jsonService) {
         this.jsonService = jsonService;
-        this.jsonFileService = new FileService("app/invoices.json");
-        this.idsFileService = new FileService("app/ids.txt");
+        this.jsonFileService = new FileService("invoices.json");
+        this.idsFileService = new FileService("ids.txt");
     }
 
     @Override
