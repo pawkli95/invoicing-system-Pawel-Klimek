@@ -22,22 +22,22 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/invoice")
+@RequestMapping("/api/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
-    @PostMapping("/save")
-    public ResponseEntity<Invoice> addInvoice(@RequestBody Invoice invoice) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceService.saveInvoice(invoice));
+    @PostMapping
+    public ResponseEntity<Invoice> saveInvoice(@RequestBody Invoice invoice) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.saveInvoice(invoice));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Invoice>> getAll() {
         return ResponseEntity.ok().body(invoiceService.getAll());
     }
 
-    @GetMapping("/byId/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Invoice> getById(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok().body(invoiceService.getById(id));
@@ -46,12 +46,12 @@ public class InvoiceController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<Invoice> update(@RequestBody Invoice updatedInvoice) {
         return ResponseEntity.ok().body(invoiceService.updateInvoice(updatedInvoice));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         try {
             invoiceService.deleteInvoice(id);

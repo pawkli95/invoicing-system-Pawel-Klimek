@@ -20,7 +20,6 @@ class JsonServiceTest extends Specification {
     def setup() {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     def "should serialize invoice to json string"() {

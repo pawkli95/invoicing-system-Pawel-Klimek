@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import pl.futurecollars.invoicing.config.FilePathConfig;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
@@ -24,8 +25,8 @@ public class FileBasedDatabase implements Database {
 
     public FileBasedDatabase(JsonService jsonService) {
         this.jsonService = jsonService;
-        this.jsonFileService = new FileService("invoices.json");
-        this.idsFileService = new FileService("ids.txt");
+        this.jsonFileService = new FileService(FilePathConfig.JSON_FILE);
+        this.idsFileService = new FileService(FilePathConfig.IDS_FILE);
     }
 
     @Override
@@ -66,8 +67,7 @@ public class FileBasedDatabase implements Database {
     }
 
     public boolean invoiceIdIsInDatabase(UUID id) {
-        List<String> idsUsed = getIdList();
-        return idsUsed.contains(id.toString());
+        return getIdList().contains(id.toString());
     }
 
     @Override

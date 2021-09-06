@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.commons.io.FileUtils
+import pl.futurecollars.invoicing.config.FilePathConfig
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
@@ -19,44 +20,37 @@ class FileBasedDatabaseTest extends Specification {
     Company to = new Company(2L, "address2")
     Invoice invoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<>())
     ObjectMapper mapper = new ObjectMapper();
-    String jsonString;
-    String jsonTest1 = "invoices.json"
-    String jsonTest2 = "jsonTest2.txt"
-    String idTest1 = "ids.txt"
-    String idTest2 = "idTest2.txt"
+    String jsonString
+    String jsonTest = "invoicesTest.json"
+    String idTest = "idsTest.txt"
 
     def setup() {
         jsonService = new JsonService()
         fileBasedDatabase = new FileBasedDatabase(jsonService)
         fileBasedDatabase.getJsonFileService().eraseFile()
         fileBasedDatabase.getIdsFileService().eraseFile()
-        FileUtils.write(new File(jsonTest2), "", "UTF-8", false)
-        FileUtils.write(new File(idTest2), "", "UTF-8", false)
+        FileUtils.write(new File(jsonTest), "", "UTF-8", false)
+        FileUtils.write(new File(idTest), "", "UTF-8", false)
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         jsonString = mapper.writeValueAsString(invoice)
     }
 
-    def cleaup() {
-        fileBasedDatabase.getJsonFileService().eraseFile()
-        fileBasedDatabase.getIdsFileService().eraseFile()
-    }
-
     def "should save invoice to file"() {
         given:
-        FileUtils.write(new File(jsonTest2), jsonString + "\n", "UTF-8")
+        FileUtils.write(new File(jsonTest), jsonString + "\n", "UTF-8")
 
         when:
         fileBasedDatabase.save(invoice)
 
         then:
-        FileUtils.contentEquals(new File(jsonTest1), new File(jsonTest2))
+        FileUtils.contentEquals(new File(FilePathConfig.JSON_FILE), new File(jsonTest))
     }
 
     def "should get invoice by id"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UTF-8");
-        FileUtils.write(new File(idTest1),invoice.getId().toString() + "\n", "UTF-8");
+        FileUtils.write(new File(FilePathConfig.JSON_FILE), jsonString, "UTF-8");
+        FileUtils.write(new File(FilePathConfig.IDS_FILE),invoice.getId().toString(), "UTF-8");
 
         when:
         Invoice returnedInvoice = fileBasedDatabase.getById(invoice.getId())
@@ -75,7 +69,7 @@ class FileBasedDatabaseTest extends Specification {
 
     def "should get list of all invoices"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString, "UTF-8")
+        FileUtils.write(new File(FilePathConfig.JSON_FILE), jsonString, "UTF-8")
 
         when:
         def returnedList = fileBasedDatabase.getAll()
@@ -94,33 +88,30 @@ class FileBasedDatabaseTest extends Specification {
 
     def "should update invoice"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString + "\n", "UTF-8")
-        FileUtils.write(new File(idTest1), invoice.getId().toString() + "\n", "UTF-8")
+        FileUtils.write(new File(FilePathConfig.JSON_FILE), jsonString + "\n", "UTF-8")
+        FileUtils.write(new File(FilePathConfig.IDS_FILE), invoice.getId().toString() + "\n", "UTF-8")
         Invoice updatedInvoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
         updatedInvoice.setId(invoice.getId())
         String updatedJsonString = mapper.writeValueAsString(updatedInvoice)
-        FileUtils.write(new File(jsonTest2), updatedJsonString + "\n", "UTF-8")
+        FileUtils.write(new File(jsonTest), updatedJsonString + "\n", "UTF-8")
 
         when:
         fileBasedDatabase.update(updatedInvoice)
 
         then:
-        FileUtils.contentEquals(new File(jsonTest1), new File(jsonTest2))
+        FileUtils.contentEquals(new File(FilePathConfig.JSON_FILE), new File(jsonTest))
     }
 
     def "should delete invoice from database"() {
         given:
-        FileUtils.write(new File(jsonTest1), jsonString, "UTF-8")
-        FileUtils.write(new File(idTest1), invoice.getId().toString(), "UTF-8")
+        FileUtils.write(new File(FilePathConfig.JSON_FILE), jsonString, "UTF-8")
+        FileUtils.write(new File(FilePathConfig.IDS_FILE), invoice.getId().toString(), "UTF-8")
 
         when:
         fileBasedDatabase.delete(invoice.getId())
 
         then:
-        File jsonTest1 = new File(jsonTest1)
-        jsonTest1.length() == 0
-        File idTest1 = new File(idTest1)
-        idTest1.length() == 0
+       new File(FilePathConfig.JSON_FILE).length() == 0
     }
 
     def "should throw NoSuchElementException when deleting nonexistent invoice"() {

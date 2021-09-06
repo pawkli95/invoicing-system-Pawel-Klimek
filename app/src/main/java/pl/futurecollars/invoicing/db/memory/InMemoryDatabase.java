@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.Getter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-@Component
+@Repository
 public class InMemoryDatabase implements Database {
 
     @Getter

@@ -19,7 +19,7 @@ class FileServiceTest extends Specification {
 
     def "should save string to the file"() {
         given:
-        FileUtils.write(new File(test2), input + "delimeter \n", "UTF-8")
+        FileUtils.write(new File(test2), input + "\n", "UTF-8")
 
         when:
         fileService.write(input)
@@ -41,7 +41,7 @@ class FileServiceTest extends Specification {
 
     def "should read strings from file into list"() {
         given:
-        FileUtils.write(file1, input + "delimeter \n", "UTF-8")
+        FileUtils.write(file1, input + "\n", "UTF-8")
 
         when:
         List<String> list = fileService.read()

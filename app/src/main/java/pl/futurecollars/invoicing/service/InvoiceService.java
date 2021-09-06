@@ -5,18 +5,16 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@RequiredArgsConstructor
 @Service
 public class InvoiceService {
 
     private final Database database;
-
-    public InvoiceService(Database database) {
-        this.database = database;
-    }
 
     public Invoice saveInvoice(Invoice invoice) {
         return database.save(invoice);
