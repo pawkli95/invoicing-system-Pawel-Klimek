@@ -44,7 +44,7 @@ class InvoiceServiceIntegrationTest extends Specification {
 
     def "should throw exception when id is not used"() {
         when:"we ask invoice service to get nonexistent invoice"
-        def returnedInvoice = invoiceService.getById(UUID.randomUUID())
+        invoiceService.getById(UUID.randomUUID())
 
         then:"exception is thrown"
         thrown(NoSuchElementException)
