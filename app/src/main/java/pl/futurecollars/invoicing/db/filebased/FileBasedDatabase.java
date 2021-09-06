@@ -10,16 +10,18 @@ import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
+@Data
+@Repository
 public class FileBasedDatabase implements Database {
 
     private final JsonService jsonService;
     private final FileService jsonFileService;
     private final FileService idsFileService;
 
-    public FileBasedDatabase(JsonService jsonService, FileService jsonFileService, FileService idsFileService) {
+    public FileBasedDatabase(JsonService jsonService) {
         this.jsonService = jsonService;
-        this.jsonFileService = jsonFileService;
-        this.idsFileService = idsFileService;
+        this.jsonFileService = new FileService(FilePathConfig.JSON_FILE);
+        this.idsFileService = new FileService(FilePathConfig.IDS_FILE);
     }
 
     @Override
