@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.Getter;
+import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Repository
 public class InMemoryDatabase implements Database {
 
     @Getter
@@ -27,8 +30,11 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public Invoice getById(UUID id) {
-        return database.get(id);
+    public Invoice getById(UUID id) throws NoSuchElementException {
+        if (database.containsKey(id)) {
+            return database.get(id);
+        }
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -46,11 +52,14 @@ public class InMemoryDatabase implements Database {
 
     @Override
     public boolean delete(UUID id) {
-        try {
-            database.remove(id);
-        } catch (Exception e) {
-            return false;
+        if (database.containsKey(id)) {
+            try {
+                database.remove(id);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
         }
-        return true;
+        throw new NoSuchElementException();
     }
 }
