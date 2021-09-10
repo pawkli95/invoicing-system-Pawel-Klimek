@@ -21,8 +21,8 @@ public class FileBasedDatabase implements Database {
     private final FileService jsonFileService;
     private final FileService idsFileService;
 
-    public FileBasedDatabase(JsonService jsonService) {
-        this.jsonService = jsonService;
+    public FileBasedDatabase() {
+        this.jsonService = new JsonService();
         this.jsonFileService = new FileService(FilePathConfig.JSON_FILE);
         this.idsFileService = new FileService(FilePathConfig.IDS_FILE);
     }

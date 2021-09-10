@@ -1,12 +1,13 @@
 package pl.futurecollars.invoicing.db.filebased
 
+import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.db.DatabaseTest
-import pl.futurecollars.invoicing.utils.JsonService
 
+@SpringBootTest
 class FileBasedDatabaseTest extends DatabaseTest {
 
     def setup() {
-        database = new FileBasedDatabase(new JsonService())
+        database = new FileBasedDatabase()
         database.getJsonFileService().eraseFile()
         database.getIdsFileService().eraseFile()
     }

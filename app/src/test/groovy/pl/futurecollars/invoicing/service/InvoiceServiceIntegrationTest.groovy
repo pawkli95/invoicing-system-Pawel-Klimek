@@ -1,26 +1,22 @@
 package pl.futurecollars.invoicing.service
 
+import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
-import pl.futurecollars.invoicing.model.Company
+import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Specification
-import java.time.LocalDateTime
 import java.util.function.Predicate
 
+@SpringBootTest
 class InvoiceServiceIntegrationTest extends Specification {
 
-    Database database;
+    Database inMemoryDatabase;
     InvoiceService invoiceService;
-    Invoice invoice;
-    Company from = new Company(1L, "adress")
-    Company to = new Company(2L, "address")
-
+    Invoice invoice = InvoiceFixture.getInvoice()
     def setup() {
-        database = new InMemoryDatabase()
-        invoiceService = new InvoiceService(database)
-        invoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
+        inMemoryDatabase = new InMemoryDatabase()
+        invoiceService = new InvoiceService(inMemoryDatabase)
     }
 
     def "should save invoice to database"() {
@@ -28,12 +24,12 @@ class InvoiceServiceIntegrationTest extends Specification {
         invoiceService.saveInvoice(invoice)
 
         then: "invoice is saved in database"
-        database.getById(invoice.getId()) == invoice
+        inMemoryDatabase.getById(invoice.getId()) == invoice
     }
 
     def "should get invoice by id from database"() {
         given: "invoice saved to database"
-        database.save(invoice)
+        inMemoryDatabase.save(invoice)
 
         when: "we ask invoice service for invoice by id"
         Invoice returnedInvoice = invoiceService.getById(invoice.getId())
@@ -52,7 +48,7 @@ class InvoiceServiceIntegrationTest extends Specification {
 
     def "should get list of invoices"() {
         given: "invoice saved to database"
-        database.save(invoice)
+        invoiceService.saveInvoice(invoice)
 
         when: "we ask invoice service for a list of all invoices"
         List<Invoice> invoiceList = invoiceService.getAll()
@@ -68,7 +64,7 @@ class InvoiceServiceIntegrationTest extends Specification {
 
     def "should filter database"() {
         given: "a list of invoices and a Predicate"
-        database.save(invoice)
+        inMemoryDatabase.save(invoice)
         Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getFrom().getTaxIdentificationNumber() == 1L
 
         when: "we ask invoice service to filter the database based on Predicate"
@@ -80,29 +76,29 @@ class InvoiceServiceIntegrationTest extends Specification {
 
     def "should update invoice in database"() {
         given: "invoice saved to database"
-        database.save(invoice)
+        inMemoryDatabase.save(invoice)
 
         and: "updated invoice"
-        Invoice updatedInvoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
+        Invoice updatedInvoice = InvoiceFixture.getInvoice()
         updatedInvoice.setId(invoice.getId())
 
         when: "we ask invoice service to update database"
         invoiceService.updateInvoice(updatedInvoice)
 
         then: "database is updated"
-        database.getById(updatedInvoice.getId()) == updatedInvoice
+        inMemoryDatabase.getById(updatedInvoice.getId()) == updatedInvoice
 
     }
 
     def "should delete invoice from database"() {
         given: "invoice saved to database"
-        database.save(invoice)
+        inMemoryDatabase.save(invoice)
 
         when: "we ask invoice service to delete invoice"
         invoiceService.deleteInvoice(invoice.getId())
 
         then: "database is empty"
-        database.getAll().isEmpty()
+        inMemoryDatabase.getAll().isEmpty()
     }
 
     def "should throw exception when deleting nonexistent invoice"() {

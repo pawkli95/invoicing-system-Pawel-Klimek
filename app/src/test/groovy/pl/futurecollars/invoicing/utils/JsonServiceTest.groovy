@@ -3,18 +3,21 @@ package pl.futurecollars.invoicing.utils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
+@SpringBootTest
 class JsonServiceTest extends Specification {
 
-    JsonService jsonService = new JsonService()
-    Company from = new Company(1L, "address1");
-    Company to = new Company(2L, "address2");
-    Invoice invoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<>());
+    @Autowired
+    JsonService jsonService
+    Invoice invoice = InvoiceFixture.getInvoice()
     ObjectMapper mapper = new ObjectMapper();
 
     def setup() {
