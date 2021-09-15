@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Data;
 import org.springframework.stereotype.Repository;
-import pl.futurecollars.invoicing.config.FilePathConfig;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
@@ -20,12 +19,6 @@ public class FileBasedDatabase implements Database {
     private final JsonService jsonService;
     private final FileService jsonFileService;
     private final FileService idsFileService;
-
-    public FileBasedDatabase() {
-        this.jsonService = new JsonService();
-        this.jsonFileService = new FileService(FilePathConfig.JSON_FILE);
-        this.idsFileService = new FileService(FilePathConfig.IDS_FILE);
-    }
 
     @Override
     public Invoice save(Invoice invoice) {

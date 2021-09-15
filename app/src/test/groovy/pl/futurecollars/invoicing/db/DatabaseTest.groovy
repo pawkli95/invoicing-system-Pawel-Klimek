@@ -10,8 +10,14 @@ import java.time.LocalDateTime
 @SpringBootTest
 abstract class DatabaseTest extends Specification {
 
-    Database database;
+    Database database
     Invoice invoice = InvoiceFixture.getInvoice()
+
+    abstract Database getDatabase();
+
+    def setup() {
+        database = getDatabase()
+    }
 
     def "should save invoice to database"() {
         when: "we ask database to save invoice"
