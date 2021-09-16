@@ -1,24 +1,19 @@
 package pl.futurecollars.invoicing.service
 
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.model.Company
+import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Specification
-import java.time.LocalDateTime
 import java.util.function.Predicate
 
 class InvoiceServiceUnitTest extends Specification {
 
     Database database;
-    Invoice invoice;
+    Invoice invoice = InvoiceFixture.getInvoice()
     InvoiceService invoiceService;
 
     def setup() {
         database = Mock()
-        Company from = new Company(1L, "")
-        Company to = new Company(2L, "")
-        invoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
         invoiceService = new InvoiceService(database)
     }
 

@@ -58,12 +58,8 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getById(@PathVariable UUID id) {
-        try {
-            return ResponseEntity.ok().body(invoiceService.getById(id));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Invoice> getById(@PathVariable UUID id) throws NoSuchElementException {
+        return ResponseEntity.ok().body(invoiceService.getById(id));
     }
 
     @PutMapping
@@ -72,12 +68,8 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        try {
-            invoiceService.deleteInvoice(id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable UUID id) throws NoSuchElementException {
+        invoiceService.deleteInvoice(id);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }

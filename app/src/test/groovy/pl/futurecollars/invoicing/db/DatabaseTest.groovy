@@ -1,18 +1,23 @@
 package pl.futurecollars.invoicing.db
 
-import pl.futurecollars.invoicing.model.Company
+import org.springframework.boot.test.context.SpringBootTest
+import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Specification
 import java.time.LocalDateTime
-import java.time.Month
 
+@SpringBootTest
 abstract class DatabaseTest extends Specification {
 
-    Database database;
-    Company from = new Company(1L, "address1");
-    Company to = new Company(2L, "address2");
-    Invoice invoice = new Invoice(LocalDateTime.of(2021, Month.APRIL, 20, 19, 20), from ,to, new ArrayList<InvoiceEntry>());
+    Database database
+    Invoice invoice = InvoiceFixture.getInvoice()
+
+    abstract Database getDatabase();
+
+    def setup() {
+        database = getDatabase()
+    }
 
     def "should save invoice to database"() {
         when: "we ask database to save invoice"
@@ -75,11 +80,11 @@ abstract class DatabaseTest extends Specification {
         database.save(invoice)
 
         and: "updated invoice"
-        Invoice updatedInvoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
+        Invoice updatedInvoice = InvoiceFixture.getInvoice()
         updatedInvoice.setId(invoice.getId())
 
         when: "we ask database to update invoice"
-        def returnedInvoice = database.update(updatedInvoice)
+        database.update(updatedInvoice)
 
         then: "invoice is updated"
         database.getById(invoice.getId()) == updatedInvoice
@@ -90,7 +95,7 @@ abstract class DatabaseTest extends Specification {
         database.save(invoice)
 
         and:"updated invoice"
-        Invoice updatedInvoice = new Invoice(LocalDateTime.now(), from, to, new ArrayList<InvoiceEntry>())
+        Invoice updatedInvoice = InvoiceFixture.getInvoice()
         updatedInvoice.setId(invoice.getId())
 
         when: "we ask database to update invoice"
