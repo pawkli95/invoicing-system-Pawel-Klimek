@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Component;
-import pl.futurecollars.invoicing.model.Invoice;
 
 @Component
-public class JsonService {
+public class JsonService<T> {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -17,7 +16,7 @@ public class JsonService {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    public String toJsonString(Invoice object) {
+    public String toJsonString(T object) {
         try {
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -26,9 +25,9 @@ public class JsonService {
         }
     }
 
-    public Invoice toObject(String jsonString) {
+    public T toObject(String jsonString, Class<T> clazz) {
         try {
-            return mapper.readValue(jsonString, Invoice.class);
+            return mapper.readValue(jsonString, clazz);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;

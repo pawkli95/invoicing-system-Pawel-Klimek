@@ -34,14 +34,17 @@ public class InvoiceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.saveInvoice(invoice));
     }
 
-    @GetMapping
+    @GetMapping(produces = { "application/json;charset=UTF-8" })
     public ResponseEntity<List<Invoice>> getAll(@RequestParam(value = "before", required = false)
                                                     @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
                                                 @RequestParam(value = "after", required = false)
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
                                                 @RequestParam(value = "sellerId", required = false) UUID sellerId,
                                                 @RequestParam(value = "buyerId", required = false) UUID buyerId) {
-        Predicate<Invoice> invoicePredicate = Objects::nonNull;
+        Predicate<Invoice> invoicePredicate = null;
+        if (before != null || after != null || sellerId != null || buyerId != null) {
+            invoicePredicate = Objects::nonNull;
+        }
         if (before != null) {
             invoicePredicate = invoicePredicate.and(invoice -> invoice.getDate().toLocalDate().isBefore(before));
         }
@@ -54,7 +57,11 @@ public class InvoiceController {
         if (buyerId != null) {
             invoicePredicate = invoicePredicate.and(invoice -> invoice.getTo().getId().equals(buyerId));
         }
-        return ResponseEntity.ok().body(invoiceService.filter(invoicePredicate));
+        if (invoicePredicate == null) {
+            return ResponseEntity.ok().body(invoiceService.getAll());
+        } else {
+            return ResponseEntity.ok().body(invoiceService.filter(invoicePredicate));
+        }
     }
 
     @GetMapping("/{id}")
@@ -63,7 +70,7 @@ public class InvoiceController {
     }
 
     @PutMapping
-    public ResponseEntity<Invoice> update(@RequestBody Invoice updatedInvoice) {
+    public ResponseEntity<Invoice> update(@RequestBody Invoice updatedInvoice) throws NoSuchElementException {
         return ResponseEntity.ok().body(invoiceService.updateInvoice(updatedInvoice));
     }
 

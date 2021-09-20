@@ -24,7 +24,6 @@ public class InMemoryDatabase implements Database {
             database.put(invoice.getId(), invoice);
         }
         return invoice;
-
     }
 
     @Override
@@ -41,11 +40,12 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public Invoice update(Invoice updatedInvoice) {
-        if (updatedInvoice != null) {
+    public Invoice update(Invoice updatedInvoice) throws NoSuchElementException {
+        if (updatedInvoice != null && database.containsKey(updatedInvoice.getId())) {
             database.put(updatedInvoice.getId(), updatedInvoice);
+            return updatedInvoice;
         }
-        return updatedInvoice;
+        throw new NoSuchElementException();
     }
 
     @Override

@@ -3,9 +3,7 @@ package pl.futurecollars.invoicing.db
 import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
 import spock.lang.Specification
-import java.time.LocalDateTime
 
 @SpringBootTest
 abstract class DatabaseTest extends Specification {
@@ -103,6 +101,19 @@ abstract class DatabaseTest extends Specification {
 
         then: "updated invoice is returned"
         returnedInvoice == updatedInvoice
+    }
+
+    def "should throw exception when updating nonexistent invoice"() {
+        given:
+        Invoice invoice = InvoiceFixture.getInvoice()
+
+        when:
+        database.update(invoice)
+
+        then:
+        thrown(NoSuchElementException)
+
+
     }
 
     def "should delete invoice"() {

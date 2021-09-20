@@ -18,10 +18,6 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
     def setup() {
         database = getDatabase()
         invoiceService = new InvoiceService(database)
-        if(database instanceof FileBasedDatabase) {
-            database.getJsonFileService().eraseFile()
-            database.getIdsFileService().eraseFile()
-        }
     }
 
     def "should save invoice to database"() {
@@ -70,7 +66,8 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
     def "should filter database"() {
         given: "a list of invoices and a Predicate"
         database.save(invoice)
-        Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getFrom().getTaxIdentificationNumber() == 1L
+        long taxNumber = invoice.getFrom().getTaxIdentificationNumber()
+        Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getFrom().getTaxIdentificationNumber() == taxNumber
 
         when: "we ask invoice service to filter the database based on Predicate"
         List<Invoice> invoiceList = invoiceService.filter(invoicePredicate)
@@ -93,6 +90,17 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
         then: "database is updated"
         database.getById(updatedInvoice.getId()) == updatedInvoice
 
+    }
+
+    def "should throw exception when updating nonexistent invoice"() {
+        given: "random invoice"
+        Invoice invoice = InvoiceFixture.getInvoice()
+
+        when: "we ask invoice service to update nonexistent invoice"
+        invoiceService.updateInvoice(invoice)
+
+        then: "exception is thrown"
+        thrown(NoSuchElementException)
     }
 
     def "should delete invoice from database"() {
