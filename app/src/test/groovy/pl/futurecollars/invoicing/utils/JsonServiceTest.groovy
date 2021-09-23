@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class JsonServiceTest extends Specification {
 
     @Autowired
-    JsonService jsonService
+    JsonService<Invoice> jsonService
     Invoice invoice = InvoiceFixture.getInvoice()
     ObjectMapper mapper = new ObjectMapper();
 
@@ -41,7 +41,7 @@ class JsonServiceTest extends Specification {
         String jsonString = mapper.writeValueAsString(invoice)
 
         when:
-        Invoice invoiceDeserialized = jsonService.toObject(jsonString)
+        Invoice invoiceDeserialized = jsonService.toObject(jsonString, Invoice.class)
 
         then:
         invoiceDeserialized == invoice

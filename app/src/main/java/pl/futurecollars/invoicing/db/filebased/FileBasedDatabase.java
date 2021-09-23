@@ -16,7 +16,7 @@ import pl.futurecollars.invoicing.utils.JsonService;
 @Repository
 public class FileBasedDatabase implements Database {
 
-    private final JsonService jsonService;
+    private final JsonService<Invoice> jsonInvoiceService;
     private final FileService jsonFileService;
     private final FileService idsFileService;
 
@@ -42,7 +42,7 @@ public class FileBasedDatabase implements Database {
     }
 
     private void writeInvoiceToDatabase(Invoice invoice) {
-        String jsonString = jsonService.toJsonString(invoice);
+        String jsonString = jsonInvoiceService.toJsonString(invoice);
         jsonFileService.write(jsonString);
         idsFileService.write(invoice.getId().toString());
     }
@@ -51,8 +51,8 @@ public class FileBasedDatabase implements Database {
     public Invoice getById(UUID id) throws NoSuchElementException {
         if (invoiceIdIsInDatabase(id)) {
             return jsonFileService.read().stream()
-                    .map(jsonService::toObject)
-                    .filter(invoice -> invoice.getId().equals(id)).collect(Collectors.toList()).get(0);
+                    .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
+                    .filter(invoice -> invoice.getId().equals(id)).findFirst().get();
         }
         throw new NoSuchElementException();
     }
@@ -65,17 +65,17 @@ public class FileBasedDatabase implements Database {
     @Override
     public List<Invoice> getAll() {
         return jsonFileService.read().stream()
-                .map(jsonService::toObject)
+                .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Invoice update(Invoice updatedInvoice) {
+    public Invoice update(Invoice updatedInvoice) throws NoSuchElementException {
         if (updatedInvoice != null && invoiceIsInDatabase(updatedInvoice)) {
             updateInvoice(updatedInvoice);
             return updatedInvoice;
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     private boolean invoiceIsInDatabase(Invoice invoice) {
@@ -88,7 +88,7 @@ public class FileBasedDatabase implements Database {
         invoiceList.add(updatedInvoice);
         jsonFileService.eraseFile();
         invoiceList.stream()
-                .map(jsonService::toJsonString)
+                .map(jsonInvoiceService::toJsonString)
                 .forEach(jsonFileService::write);
     }
 
@@ -107,7 +107,7 @@ public class FileBasedDatabase implements Database {
         invoiceList.removeIf(invoice -> invoice.getId().equals(id));
         jsonFileService.eraseFile();
         invoiceList.stream()
-                .map(jsonService::toJsonString)
+                .map(jsonInvoiceService::toJsonString)
                 .forEach(jsonFileService::write);
     }
 

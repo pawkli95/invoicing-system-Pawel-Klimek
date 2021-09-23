@@ -35,7 +35,7 @@ public class InvoiceService {
                 .collect(Collectors.toList());
     }
 
-    public Invoice updateInvoice(Invoice updatedInvoice) {
+    public Invoice updateInvoice(Invoice updatedInvoice) throws NoSuchElementException {
         return fileBasedDatabase.update(updatedInvoice);
     }
 
