@@ -12,11 +12,9 @@ import spock.lang.Specification
 
 import java.time.LocalDateTime
 
-@SpringBootTest
 class JsonServiceTest extends Specification {
 
-    @Autowired
-    JsonService<Invoice> jsonService
+    JsonService<Invoice> jsonService = new JsonService<>();
     Invoice invoice = InvoiceFixture.getInvoice()
     ObjectMapper mapper = new ObjectMapper();
 

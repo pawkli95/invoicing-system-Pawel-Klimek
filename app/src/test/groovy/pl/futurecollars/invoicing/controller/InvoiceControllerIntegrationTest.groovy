@@ -14,13 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-class InvoiceControllerIntegrationTest extends Specification{
+abstract class InvoiceControllerIntegrationTest extends Specification{
 
     @Autowired
     MockMvc mockMvc
 
-    @Autowired
-    JsonService<Invoice> jsonService
+    JsonService<Invoice> jsonService = new JsonService<>();
 
     JsonService<Invoice[]> jsonListService = new JsonService<>()
 

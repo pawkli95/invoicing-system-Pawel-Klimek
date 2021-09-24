@@ -5,8 +5,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import pl.futurecollars.invoicing.controller.testConfig.FileBasedDatabaseTestConfig
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.utils.JsonService
@@ -19,14 +19,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Stepwise
-@Import(FileBasedDatabaseTestConfig.class)
+@ActiveProfiles("fileTest")
 class InvoiceControllerStepwiseTest extends Specification {
 
     @Autowired
     private MockMvc mockMvc
 
-    @Autowired
-    JsonService<Invoice> jsonInvoiceService
+    JsonService<Invoice> jsonInvoiceService = new JsonService<>()
 
     JsonService<Invoice[]> jsonInvoiceListService = new JsonService<>()
 

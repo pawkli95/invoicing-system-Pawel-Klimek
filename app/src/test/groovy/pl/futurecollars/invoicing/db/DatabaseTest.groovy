@@ -5,7 +5,6 @@ import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
-@SpringBootTest
 abstract class DatabaseTest extends Specification {
 
     Database database
