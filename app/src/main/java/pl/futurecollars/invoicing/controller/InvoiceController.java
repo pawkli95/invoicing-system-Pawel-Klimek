@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.InvoiceService;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/invoices")
@@ -31,6 +33,7 @@ public class InvoiceController {
 
     @PostMapping
     public ResponseEntity<Invoice> saveInvoice(@RequestBody Invoice invoice) {
+        log.info("Request to save invoice");
         return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.saveInvoice(invoice));
     }
 
@@ -41,6 +44,7 @@ public class InvoiceController {
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
                                                 @RequestParam(value = "sellerId", required = false) UUID sellerId,
                                                 @RequestParam(value = "buyerId", required = false) UUID buyerId) {
+        log.info("Request to return invoices");
         Predicate<Invoice> invoicePredicate = null;
         if (before != null || after != null || sellerId != null || buyerId != null) {
             invoicePredicate = Objects::nonNull;
@@ -66,16 +70,19 @@ public class InvoiceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Invoice> getById(@PathVariable UUID id) throws NoSuchElementException {
+        log.info("Request to return invoice by id: " + id.toString());
         return ResponseEntity.ok().body(invoiceService.getById(id));
     }
 
     @PutMapping
     public ResponseEntity<Invoice> update(@RequestBody Invoice updatedInvoice) throws NoSuchElementException {
+        log.info("Request to update invoice");
         return ResponseEntity.ok().body(invoiceService.updateInvoice(updatedInvoice));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) throws NoSuchElementException {
+        log.info("Request to delete invoice with id: " + id.toString());
         invoiceService.deleteInvoice(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

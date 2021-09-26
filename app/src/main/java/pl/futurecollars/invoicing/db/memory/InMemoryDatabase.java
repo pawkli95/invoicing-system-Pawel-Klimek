@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-@Repository
 public class InMemoryDatabase implements Database {
 
     private final Map<UUID, Invoice> database = new HashMap<>();

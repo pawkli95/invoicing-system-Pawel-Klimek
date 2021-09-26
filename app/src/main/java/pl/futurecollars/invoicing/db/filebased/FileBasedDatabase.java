@@ -6,14 +6,14 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Data;
-import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FileService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
+@Slf4j
 @Data
-@Repository
 public class FileBasedDatabase implements Database {
 
     private final JsonService<Invoice> jsonInvoiceService;
@@ -25,6 +25,7 @@ public class FileBasedDatabase implements Database {
         if (invoice != null) {
             makeSureInvoiceIdIsUnique(invoice);
             writeInvoiceToDatabase(invoice);
+            log.info("Added invoice to file database");
             return invoice;
         }
         return null;
@@ -50,6 +51,7 @@ public class FileBasedDatabase implements Database {
     @Override
     public Invoice getById(UUID id) throws NoSuchElementException {
         if (invoiceIdIsInDatabase(id)) {
+            log.info("Returned invoice by id: " + id.toString());
             return jsonFileService.read().stream()
                     .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
                     .filter(invoice -> invoice.getId().equals(id)).findFirst().get();
@@ -64,6 +66,7 @@ public class FileBasedDatabase implements Database {
 
     @Override
     public List<Invoice> getAll() {
+        log.info("Returned all invoices");
         return jsonFileService.read().stream()
                 .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
                 .collect(Collectors.toList());
@@ -73,6 +76,7 @@ public class FileBasedDatabase implements Database {
     public Invoice update(Invoice updatedInvoice) throws NoSuchElementException {
         if (updatedInvoice != null && invoiceIsInDatabase(updatedInvoice)) {
             updateInvoice(updatedInvoice);
+            log.info("Updated invoice");
             return updatedInvoice;
         }
         throw new NoSuchElementException();
@@ -97,6 +101,7 @@ public class FileBasedDatabase implements Database {
         if (invoiceIdIsInDatabase(id)) {
             deleteInvoice(id);
             deleteId(id);
+            log.info("Deleted invoice by id: " + id.toString());
             return true;
         }
         throw new NoSuchElementException();

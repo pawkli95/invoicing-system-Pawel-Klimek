@@ -1,17 +1,20 @@
 package pl.futurecollars.invoicing.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 
-import pl.futurecollars.invoicing.config.FilePathConfig
-import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.filebased.FileBasedDatabase
-import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.utils.FileService
-import pl.futurecollars.invoicing.utils.JsonService
 
-class InvoiceServiceFileBasedTest extends InvoiceServiceAbstractIntegrationTest{
+@ActiveProfiles("fileTest")
+@SpringBootTest
+class InvoiceServiceFileBasedTest extends InvoiceServiceAbstractIntegrationTest {
+
+    @Autowired
+    FileBasedDatabase fileBasedDatabase
 
     FileBasedDatabase getDatabase() {
-        return new FileBasedDatabase(new JsonService<Invoice>(), new FileService(FilePathConfig.TEST_JSON_FILE), new FileService(FilePathConfig.TEST_IDS_FILE))
+        return fileBasedDatabase
     }
 
     def setup() {
@@ -19,5 +22,5 @@ class InvoiceServiceFileBasedTest extends InvoiceServiceAbstractIntegrationTest{
         database.getJsonFileService().eraseFile()
         database.getIdsFileService().eraseFile()
         invoiceService = new InvoiceService(database)
-    }
+        }
 }

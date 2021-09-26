@@ -6,6 +6,6 @@ import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 class InvoiceServiceInMemoryTest extends InvoiceServiceAbstractIntegrationTest{
 
     Database getDatabase() {
-        return new InMemoryDatabase()
+        return new InMemoryDatabase();
     }
 }

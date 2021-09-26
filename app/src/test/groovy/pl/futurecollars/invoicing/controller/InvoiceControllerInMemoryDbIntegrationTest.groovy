@@ -1,8 +1,7 @@
 package pl.futurecollars.invoicing.controller
 
-import org.springframework.context.annotation.Import
-import pl.futurecollars.invoicing.controller.testConfig.InMemoryDatabaseTestConfig
+import org.springframework.test.context.ActiveProfiles
 
-@Import(InMemoryDatabaseTestConfig.class)
+@ActiveProfiles("inmemoryTest")
 class InvoiceControllerInMemoryDbIntegrationTest extends InvoiceControllerIntegrationTest {
 }

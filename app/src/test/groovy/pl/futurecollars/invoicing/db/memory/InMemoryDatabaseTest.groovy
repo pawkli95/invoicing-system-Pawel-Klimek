@@ -7,6 +7,6 @@ class InMemoryDatabaseTest extends DatabaseTest{
 
     @Override
     Database getDatabase() {
-        return new InMemoryDatabase()
+        return new InMemoryDatabase();
     }
 }
