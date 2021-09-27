@@ -34,7 +34,10 @@ class InvoiceControllerUnitTest extends Specification {
         String jsonString = jsonInvoiceService.toJsonString(invoice)
 
         when:
-        def response = mockMvc.perform(post("/api/invoices").contentType(MediaType.APPLICATION_JSON).content(jsonString))
+        def response = mockMvc
+                .perform(post("/api/invoices")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -50,7 +53,8 @@ class InvoiceControllerUnitTest extends Specification {
         invoiceService.getById(id) >> invoice
 
         when:
-        def response = mockMvc.perform(get("/api/invoices/" + id.toString()))
+        def response = mockMvc
+                .perform(get("/api/invoices/" + id.toString()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -67,7 +71,8 @@ class InvoiceControllerUnitTest extends Specification {
         invoiceService.getById(randomId) >> {throw new NoSuchElementException()}
 
         when:
-        def response = mockMvc.perform(get("/api/invoices" + randomId.toString()))
+        def response = mockMvc
+                .perform(get("/api/invoices" + randomId.toString()))
                 .andExpect(status().isNotFound())
                 .andReturn()
                 .getResponse()
@@ -82,7 +87,8 @@ class InvoiceControllerUnitTest extends Specification {
         invoiceService.getAll() >> [invoice]
 
         when:
-        def response = mockMvc.perform(get("/api/invoices"))
+        def response = mockMvc
+                .perform(get("/api/invoices"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -101,7 +107,10 @@ class InvoiceControllerUnitTest extends Specification {
         invoiceService.updateInvoice(updatedInvoice) >> updatedInvoice
 
         when:
-        def response = mockMvc.perform(put("/api/invoices").contentType(MediaType.APPLICATION_JSON).content(jsonString))
+        def response = mockMvc
+                .perform(put("/api/invoices")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -116,7 +125,8 @@ class InvoiceControllerUnitTest extends Specification {
         UUID id = UUID.randomUUID()
 
         expect:
-        mockMvc.perform(delete("/api/invoices/" + id.toString()))
+        mockMvc
+                .perform(delete("/api/invoices/" + id.toString()))
                 .andExpect(status().isAccepted())
     }
 
@@ -126,7 +136,8 @@ class InvoiceControllerUnitTest extends Specification {
         invoiceService.deleteInvoice(invalidId) >> {throw new NoSuchElementException()}
 
         expect:
-        mockMvc.perform(delete("/api/invoices/" + invalidId.toString()))
+        mockMvc
+                .perform(delete("/api/invoices/" + invalidId.toString()))
                 .andExpect(status().isNotFound())
     }
 }
