@@ -37,7 +37,8 @@ class InvoiceControllerStepwiseTest extends Specification {
         deleteAllInvoices()
 
         when:
-        def response = mockMvc.perform(get("/api/invoices"))
+        def response = mockMvc
+                .perform(get("/api/invoices"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -53,8 +54,10 @@ class InvoiceControllerStepwiseTest extends Specification {
         String jsonString = jsonInvoiceService.toJsonString(invoice)
 
         when:
-        def response = mockMvc.perform(post("/api/invoices").contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+        def response = mockMvc
+                .perform(post("/api/invoices")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -69,7 +72,8 @@ class InvoiceControllerStepwiseTest extends Specification {
         UUID id = invoice.getId()
 
         when:
-        def response = mockMvc.perform(get("/api/invoices/" + id.toString()))
+        def response = mockMvc
+                .perform(get("/api/invoices/" + id.toString()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -82,7 +86,8 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should return list of invoices"() {
         when:
-        def response = mockMvc.perform(get("/api/invoices"))
+        def response = mockMvc
+                .perform(get("/api/invoices"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -99,7 +104,8 @@ class InvoiceControllerStepwiseTest extends Specification {
         UUID invalidId = UUID.randomUUID()
 
         when:
-        def response = mockMvc.perform(get("/api/invoices/" + invalidId))
+        def response = mockMvc
+                .perform(get("/api/invoices/" + invalidId))
                 .andExpect(status().isNotFound())
                 .andReturn()
                 .getResponse()
@@ -115,8 +121,10 @@ class InvoiceControllerStepwiseTest extends Specification {
         UUID buyerId = invoice.getTo().getId()
 
         when:
-        def response = mockMvc.perform(get("/api/invoices").queryParam("sellerId", sellerId.toString())
-                .queryParam("buyerId", buyerId.toString()))
+        def response = mockMvc
+                .perform(get("/api/invoices")
+                        .queryParam("sellerId", sellerId.toString())
+                        .queryParam("buyerId", buyerId.toString()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -134,8 +142,11 @@ class InvoiceControllerStepwiseTest extends Specification {
         String updatedJsonString = jsonInvoiceService.toJsonString(updatedInvoice)
 
         expect:
-        mockMvc.perform(put("/api/invoices/").contentType(MediaType.APPLICATION_JSON).content(updatedJsonString))
-        .andExpect(status().isOk())
+        mockMvc
+                .perform(put("/api/invoices/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJsonString))
+                .andExpect(status().isOk())
     }
 
     def "should return updated invoice by id"() {
@@ -143,7 +154,8 @@ class InvoiceControllerStepwiseTest extends Specification {
         UUID id = invoice.getId()
 
         when:
-        def response = mockMvc.perform(get("/api/invoices/" + id.toString()))
+        def response = mockMvc
+                .perform(get("/api/invoices/" + id.toString()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -160,7 +172,9 @@ class InvoiceControllerStepwiseTest extends Specification {
 
         when:
         def response = mockMvc
-                    .perform(put("/api/invoices").contentType(MediaType.APPLICATION_JSON).content(jsonString))
+                    .perform(put("/api/invoices")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonString))
                     .andExpect(status().isNotFound())
                     .andReturn()
                     .getResponse()
@@ -175,17 +189,27 @@ class InvoiceControllerStepwiseTest extends Specification {
         UUID id = invoice.getId()
 
         expect:
-        mockMvc.perform(delete("/api/invoices/" + id.toString())).andExpect(status().isAccepted())
+        mockMvc
+                .perform(delete("/api/invoices/" + id.toString()))
+                .andExpect(status().isAccepted())
 
         and:
-        mockMvc.perform(delete("/api/invoices/" + id.toString())).andExpect(status().isNotFound())
+        mockMvc
+                .perform(delete("/api/invoices/" + id.toString()))
+                .andExpect(status().isNotFound())
 
         and:
-        mockMvc.perform(get("/api/invoices/" + id.toString())).andExpect(status().isNotFound())
+        mockMvc
+                .perform(get("/api/invoices/" + id.toString()))
+                .andExpect(status().isNotFound())
     }
 
     private List<Invoice> getAllInvoices() {
-        def list = mockMvc.perform(get("/api/invoices")).andReturn().getResponse().getContentAsString()
+        def list = mockMvc
+                .perform(get("/api/invoices"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
         return jsonInvoiceListService.toObject(list, Invoice[])
     }
 

@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.controller;
 
+import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -11,11 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,28 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.service.InvoiceService;
 
+@Api(tags = {"invoice-controller"})
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/invoices")
-public class InvoiceController {
+public class InvoiceController implements InvoiceControllerInterface {
 
     private final InvoiceService invoiceService;
 
-    @PostMapping
+    @Override
     public ResponseEntity<Invoice> saveInvoice(@RequestBody Invoice invoice) {
-        log.info("Request to save invoice");
+        log.debug("Request to save invoice");
         return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.saveInvoice(invoice));
     }
 
-    @GetMapping(produces = { "application/json;charset=UTF-8" })
+    @Override
     public ResponseEntity<List<Invoice>> getAll(@RequestParam(value = "before", required = false)
-                                                    @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
                                                 @RequestParam(value = "after", required = false)
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
                                                 @RequestParam(value = "sellerId", required = false) UUID sellerId,
                                                 @RequestParam(value = "buyerId", required = false) UUID buyerId) {
-        log.info("Request to return invoices");
+        log.debug("Request to return invoices");
         Predicate<Invoice> invoicePredicate = null;
         if (before != null || after != null || sellerId != null || buyerId != null) {
             invoicePredicate = Objects::nonNull;
@@ -68,21 +66,21 @@ public class InvoiceController {
         }
     }
 
-    @GetMapping("/{id}")
+    @Override
     public ResponseEntity<Invoice> getById(@PathVariable UUID id) throws NoSuchElementException {
-        log.info("Request to return invoice by id: " + id.toString());
+        log.debug("Request to return invoice by id: " + id.toString());
         return ResponseEntity.ok().body(invoiceService.getById(id));
     }
 
-    @PutMapping
+    @Override
     public ResponseEntity<Invoice> update(@RequestBody Invoice updatedInvoice) throws NoSuchElementException {
-        log.info("Request to update invoice");
+        log.debug("Request to update invoice");
         return ResponseEntity.ok().body(invoiceService.updateInvoice(updatedInvoice));
     }
 
-    @DeleteMapping("/{id}")
+    @Override
     public ResponseEntity<Void> delete(@PathVariable UUID id) throws NoSuchElementException {
-        log.info("Request to delete invoice with id: " + id.toString());
+        log.debug("Request to delete invoice with id: " + id.toString());
         invoiceService.deleteInvoice(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

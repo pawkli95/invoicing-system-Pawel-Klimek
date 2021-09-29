@@ -12,6 +12,8 @@ buildscript {
         spockVersion = "2.0-groovy-3.0"
         springBootVersion = "2.5.4"
         springDependencyManagementVersion = "1.0.11.RELEASE"
+        springFoxStarterVersion = "3.0.0"
+        springFoxUiVersion = "3.0.0"
     }
 }
 
@@ -29,6 +31,7 @@ plugins {
     id 'jacoco'
 
     id 'org.springframework.boot' version "${springBootVersion}"
+
     id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
 }
 
@@ -62,6 +65,9 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
+    implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
 }
 
 application {
