@@ -2,15 +2,24 @@ package pl.futurecollars.invoicing.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
+@Slf4j
 public class FileService {
 
     private final File file;
 
     public FileService(String fileName) {
         file = new File(fileName);
+        try {
+            Files.createFile(Paths.get(fileName));
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
     }
 
     public void write(String string) {

@@ -36,7 +36,7 @@ public class DatabaseConfiguration {
     @Bean
     @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "fileTest")
     public Database getTestFileBasedDatabase(@Value("${invoicing-system.invoicesFile}") String invoicesFile,
-                                                  @Value("${invoicing-system.idsFile}") String idsFile) {
+                                             @Value("${invoicing-system.idsFile}") String idsFile) {
         FileService invoices = new FileService(invoicesFile);
         FileService ids = new FileService(idsFile);
         log.info("Created test file database");
