@@ -22,7 +22,8 @@ public class SwaggerConfiguration {
                 .paths(PathSelectors.any())
                 .build()
                 .tags(
-                        new Tag("invoice-controller", "Controller used to manage invoices")
+                        new Tag("invoice-controller", "Controller used to manage invoices"),
+                        new Tag("tax-calculator-controller", "Controller used to calculate taxes")
                 )
                 .apiInfo(apiInfo());
     }

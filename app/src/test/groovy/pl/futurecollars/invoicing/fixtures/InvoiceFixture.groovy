@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 class InvoiceFixture {
 
     static Invoice getInvoice() {
-        return new Invoice(LocalDateTime.now(), CompanyFixture.getCompany(), CompanyFixture.getCompany(), new ArrayList<InvoiceEntry>())
+        return new Invoice(LocalDateTime.now(),CompanyFixture.getCompany(), CompanyFixture.getCompany(),
+        InvoiceEntryFixture.getInvoiceEntryList(4))
     }
 }

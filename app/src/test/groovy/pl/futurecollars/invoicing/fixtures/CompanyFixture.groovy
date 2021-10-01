@@ -9,6 +9,4 @@ class CompanyFixture {
     static Company getCompany() {
         return new Company(Math.abs(random.nextLong()), "address")
     }
-
-
 }

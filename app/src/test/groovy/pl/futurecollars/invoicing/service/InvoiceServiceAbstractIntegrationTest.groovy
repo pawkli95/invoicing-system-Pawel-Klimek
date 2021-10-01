@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.service
 
 import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.db.filebased.FileBasedDatabase
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification

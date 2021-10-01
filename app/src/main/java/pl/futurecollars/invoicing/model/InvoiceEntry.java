@@ -1,5 +1,7 @@
 package pl.futurecollars.invoicing.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,7 +19,10 @@ public class InvoiceEntry {
     @ApiModelProperty(value = "Value of VAT", required = true, example = "46")
     private final BigDecimal vatValue;
 
-    public InvoiceEntry(String description, BigDecimal price, Vat vatRate) {
+    @JsonCreator
+    public InvoiceEntry(@JsonProperty("description") String description,
+                        @JsonProperty("price") BigDecimal price,
+                        @JsonProperty("vatRate") Vat vatRate) {
         this.description = description;
         this.price = price;
         this.vatRate = vatRate;
