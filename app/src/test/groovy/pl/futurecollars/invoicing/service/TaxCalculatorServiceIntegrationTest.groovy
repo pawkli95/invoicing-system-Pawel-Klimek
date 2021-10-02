@@ -1,7 +1,5 @@
 package pl.futurecollars.invoicing.service
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.fixtures.CompanyFixture
 import pl.futurecollars.invoicing.fixtures.InvoiceEntryFixture
@@ -12,13 +10,10 @@ import spock.lang.Shared
 import spock.lang.Specification
 import java.time.LocalDateTime
 
-@SpringBootTest
 abstract class TaxCalculatorServiceIntegrationTest extends Specification {
 
-    @Autowired
-    Database database
+    Database database;
 
-    @Autowired
     TaxCalculatorService taxCalculatorService
 
     @Shared
@@ -29,6 +24,13 @@ abstract class TaxCalculatorServiceIntegrationTest extends Specification {
 
     @Shared
     Invoice invoice2
+
+    abstract Database getDatabase();
+
+    def setup() {
+        database = getDatabase()
+        taxCalculatorService = new TaxCalculatorService(database)
+    }
 
     def "should calculate tax"() {
         given:

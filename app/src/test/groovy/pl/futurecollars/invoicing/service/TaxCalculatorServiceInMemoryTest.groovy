@@ -1,7 +1,12 @@
 package pl.futurecollars.invoicing.service
 
-import org.springframework.test.context.ActiveProfiles
+import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 
-@ActiveProfiles("inmemoryTest")
 class TaxCalculatorServiceInMemoryTest extends TaxCalculatorServiceIntegrationTest {
+
+    @Override
+    Database getDatabase() {
+        return new InMemoryDatabase();
+    }
 }
