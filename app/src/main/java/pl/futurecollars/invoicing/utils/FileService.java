@@ -2,6 +2,7 @@ package pl.futurecollars.invoicing.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -17,8 +18,10 @@ public class FileService {
         file = new File(fileName);
         try {
             Files.createFile(Paths.get(fileName));
-        } catch (IOException e) {
+        } catch (FileAlreadyExistsException e) {
             log.info(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException();
         }
     }
 
