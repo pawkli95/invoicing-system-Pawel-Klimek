@@ -17,10 +17,11 @@ public class FileService {
 
     public FileService(String fileName) {
         file = new File(fileName);
-        try{
+        try {
             Files.createFile(Paths.get(fileName));
-        } catch(FileAlreadyExistsException e) {
-        } catch(IOException e) {
+        } catch (FileAlreadyExistsException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             throw new FileNotCreatedException(e.getMessage());
         }
     }
