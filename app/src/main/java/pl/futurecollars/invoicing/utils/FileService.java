@@ -2,9 +2,13 @@ package pl.futurecollars.invoicing.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import pl.futurecollars.invoicing.exceptions.FileNotCreatedException;
 
 @Slf4j
 public class FileService {
@@ -13,6 +17,12 @@ public class FileService {
 
     public FileService(String fileName) {
         file = new File(fileName);
+        try{
+            Files.createFile(Paths.get(fileName));
+        } catch(FileAlreadyExistsException e) {
+        } catch(IOException e) {
+            throw new FileNotCreatedException(e.getMessage());
+        }
     }
 
     public void write(String string) {
