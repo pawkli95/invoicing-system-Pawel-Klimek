@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller;
+package pl.futurecollars.invoicing.exceptions;
 
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,7 @@
 invoicing-system:
   database: fileTest
-  invoicesFile: "app/src/test/resources/invoiceTest"
-  idsFile: "app/src/test/resources/idsTest"
+  invoicesFile: src/test/resources/invoicesTest.txt
+  idsFile: src/test/resources/idsTest.txt
+
+
 
