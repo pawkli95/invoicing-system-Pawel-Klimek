@@ -16,17 +16,17 @@ public class Invoice {
     @ApiModelProperty(value = "Date of invoice creation", required = true, example = "2021-09-10T14:49:35.9239111")
     private LocalDateTime date;
     @ApiModelProperty(value = "Company who sold the product", required = true)
-    private Company from;
+    private Company seller;
     @ApiModelProperty(value = "Company who bought the product", required = true)
-    private Company to;
+    private Company buyer;
     @ApiModelProperty(value = "List of products", required = true)
     private List<InvoiceEntry> invoiceEntries;
 
-    public Invoice(LocalDateTime date, Company from, Company to, List<InvoiceEntry> invoiceEntries) {
+    public Invoice(LocalDateTime date, Company seller, Company buyer, List<InvoiceEntry> invoiceEntries) {
         this.id = UUID.randomUUID();
         this.date = date;
-        this.from = from;
-        this.to = to;
+        this.seller = seller;
+        this.buyer = buyer;
         this.invoiceEntries = invoiceEntries;
     }
 }

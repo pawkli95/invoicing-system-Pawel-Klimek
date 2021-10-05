@@ -20,7 +20,7 @@ public class FileService {
         try {
             Files.createFile(Paths.get(fileName));
         } catch (FileAlreadyExistsException e) {
-            e.printStackTrace();
+            log.debug("File already exists");
         } catch (IOException e) {
             throw new FileNotCreatedException(e.getMessage());
         }

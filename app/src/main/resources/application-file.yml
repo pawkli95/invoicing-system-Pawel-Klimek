@@ -1,4 +1,4 @@
 invoicing-system:
   database: file
-  invoicesFile: src/test/resources/invoices.json
-  idsFile: src/test/resources/ids.txt
+  invoicesFile: app/src/main/resources/invoices1.json
+  idsFile: app/src/main/resources/ids1.txt

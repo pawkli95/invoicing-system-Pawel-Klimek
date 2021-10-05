@@ -40,11 +40,11 @@ public class InvoiceController implements InvoiceControllerInterface {
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
                                                 @RequestParam(value = "after", required = false)
                                                 @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
-                                                @RequestParam(value = "sellerId", required = false) UUID sellerId,
-                                                @RequestParam(value = "buyerId", required = false) UUID buyerId) {
+                                                @RequestParam(value = "sellerTaxId", required = false) String sellerTaxId,
+                                                @RequestParam(value = "buyerTaxId", required = false) String buyerTaxId) {
         log.debug("Request to return invoices");
         Predicate<Invoice> invoicePredicate = null;
-        if (before != null || after != null || sellerId != null || buyerId != null) {
+        if (before != null || after != null || sellerTaxId != null || buyerTaxId != null) {
             invoicePredicate = Objects::nonNull;
         }
         if (before != null) {
@@ -53,11 +53,11 @@ public class InvoiceController implements InvoiceControllerInterface {
         if (after != null) {
             invoicePredicate = invoicePredicate.and(invoice -> invoice.getDate().toLocalDate().isAfter(after));
         }
-        if (sellerId != null) {
-            invoicePredicate = invoicePredicate.and(invoice -> invoice.getFrom().getId().equals(sellerId));
+        if (sellerTaxId != null) {
+            invoicePredicate = invoicePredicate.and(invoice -> invoice.getSeller().getTaxIdentificationNumber().equals(sellerTaxId));
         }
-        if (buyerId != null) {
-            invoicePredicate = invoicePredicate.and(invoice -> invoice.getTo().getId().equals(buyerId));
+        if (buyerTaxId != null) {
+            invoicePredicate = invoicePredicate.and(invoice -> invoice.getBuyer().getTaxIdentificationNumber().equals(buyerTaxId));
         }
         if (invoicePredicate == null) {
             return ResponseEntity.ok().body(invoiceService.getAll());

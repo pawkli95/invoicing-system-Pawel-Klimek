@@ -25,7 +25,7 @@ public class FileBasedDatabase implements Database {
         if (invoice != null) {
             makeSureInvoiceIdIsUnique(invoice);
             writeInvoiceToDatabase(invoice);
-            log.info("Added invoice to file database");
+            log.debug("Added invoice to file database");
             return invoice;
         }
         return null;
@@ -51,7 +51,7 @@ public class FileBasedDatabase implements Database {
     @Override
     public Invoice getById(UUID id) throws NoSuchElementException {
         if (invoiceIdIsInDatabase(id)) {
-            log.info("Returned invoice by id: " + id.toString());
+            log.debug("Returned invoice by id: " + id.toString());
             return jsonFileService.read().stream()
                     .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
                     .filter(invoice -> invoice.getId().equals(id)).findFirst().get();
@@ -66,7 +66,7 @@ public class FileBasedDatabase implements Database {
 
     @Override
     public List<Invoice> getAll() {
-        log.info("Returned all invoices");
+        log.debug("Returned all invoices");
         return jsonFileService.read().stream()
                 .map(jsonString -> jsonInvoiceService.toObject(jsonString, Invoice.class))
                 .collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class FileBasedDatabase implements Database {
     public Invoice update(Invoice updatedInvoice) throws NoSuchElementException {
         if (updatedInvoice != null && invoiceIsInDatabase(updatedInvoice)) {
             updateInvoice(updatedInvoice);
-            log.info("Updated invoice");
+            log.debug("Updated invoice");
             return updatedInvoice;
         }
         throw new NoSuchElementException();
@@ -101,7 +101,7 @@ public class FileBasedDatabase implements Database {
         if (invoiceIdIsInDatabase(id)) {
             deleteInvoice(id);
             deleteId(id);
-            log.info("Deleted invoice by id: " + id.toString());
+            log.debug("Deleted invoice by id: " + id.toString());
             return true;
         }
         throw new NoSuchElementException();

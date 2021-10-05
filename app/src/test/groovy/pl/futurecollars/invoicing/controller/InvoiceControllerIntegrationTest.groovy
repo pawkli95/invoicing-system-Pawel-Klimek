@@ -1,8 +1,10 @@
 package pl.futurecollars.invoicing.controller
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.json.JacksonTester
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
@@ -12,6 +14,7 @@ import spock.lang.Specification
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
+@AutoConfigureJsonTesters
 @AutoConfigureMockMvc
 @SpringBootTest
 abstract class InvoiceControllerIntegrationTest extends Specification{
@@ -19,9 +22,11 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
     @Autowired
     MockMvc mockMvc
 
-    JsonService<Invoice> jsonService = new JsonService<>();
+    @Autowired
+    JacksonTester<Invoice> jsonService
 
-    JsonService<Invoice[]> jsonListService = new JsonService<>()
+    @Autowired
+    JacksonTester<List<Invoice>> jsonListService
 
     Invoice invoice = InvoiceFixture.getInvoice()
 
@@ -44,7 +49,7 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
 
     def "should save invoice to database"() {
         given:
-        String jsonString = jsonService.toJsonString(invoice)
+        String jsonString = jsonService.write(invoice).getJson()
 
         when:
         def response = mockMvc
@@ -57,7 +62,7 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .getContentAsString()
 
         then:
-        jsonService.toObject(response, Invoice.class) == invoice
+        jsonService.parseObject(response) == invoice
     }
 
     def "should return list of all invoices"() {
@@ -74,7 +79,7 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .getContentAsString()
 
         then:
-        def invoices = jsonListService.toObject(response, Invoice[])
+        def invoices = jsonListService.parseObject(response)
         invoices.size() == numberOfInvoicesAdded
         invoices.sort() == expectedInvoices.sort()
     }
@@ -94,7 +99,7 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .getContentAsString()
 
         then:
-        jsonService.toObject(response, Invoice.class) == invoice
+        jsonService.parseObject(response) == invoice
     }
 
     def "should return 404 NotFound status when asking for nonexistent invoice by id"() {
@@ -119,11 +124,13 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
         Invoice invoiceToUpdate = invoices[1]
         Invoice updatedInvoice = InvoiceFixture.getInvoice()
         updatedInvoice.setId(invoiceToUpdate.getId())
-        String jsonString = jsonService.toJsonString(updatedInvoice)
+        String jsonString = jsonService.write(updatedInvoice).getJson()
 
         when:
         def response = mockMvc
-                .perform(put("/api/invoices/").contentType(MediaType.APPLICATION_JSON).content(jsonString))
+                .perform(put("/api/invoices/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -131,12 +138,12 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
 
         then:
         getInvoiceById(invoiceToUpdate.getId()) == updatedInvoice
-        jsonService.toObject(response, Invoice.class) == updatedInvoice
+        jsonService.parseObject(response) == updatedInvoice
     }
 
     def "should return 404 NotFound when updating nonexistent invoice"() {
         given:
-        String jsonString = jsonService.toJsonString(invoice)
+        String jsonString = jsonService.write(invoice).getJson()
 
         expect:
         mockMvc
@@ -152,7 +159,8 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
 
         when:
         def response = mockMvc
-                .perform(get("/api/invoices").queryParam("before", "2020-10-10"))
+                .perform(get("/api/invoices")
+                        .queryParam("before", "2020-10-10"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -162,41 +170,43 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
         response == "[]"
     }
 
-    def "should return invoices created after given date"() {
+    def "should filter and return invoices created after given date"() {
         given:
         def numberOfInvoices = 10
         def invoices = addInvoices(numberOfInvoices)
 
         when:
         def response = mockMvc
-                .perform(get("/api/invoices").queryParam("after", "2020-10-10"))
+                .perform(get("/api/invoices")
+                        .queryParam("after", "2020-10-10"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
 
         then:
-        def returnedInvoices = jsonListService.toObject(response, Invoice[])
+        def returnedInvoices = jsonListService.parseObject(response)
         returnedInvoices.size() == numberOfInvoices
         returnedInvoices.sort() == invoices.sort()
     }
 
-    def "should filter invoices by sellerId"() {
+    def "should filter invoices by sellerTaxId"() {
         given:
         def invoices = addInvoices(10)
         def invoice = invoices[0]
-        UUID sellerId = invoice.getFrom().getId()
+        String sellerTaxId = invoice.getSeller().getTaxIdentificationNumber()
 
         when:
         def response = mockMvc
-                .perform(get("/api/invoices").queryParam("sellerId", sellerId.toString()))
+                .perform(get("/api/invoices")
+                        .queryParam("sellerTaxId", sellerTaxId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
 
         then:
-        def filteredInvoices = jsonListService.toObject(response, Invoice[])
+        def filteredInvoices = jsonListService.parseObject(response)
         filteredInvoices.size() == 1
         filteredInvoices[0] == invoice
     }
@@ -205,19 +215,19 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
         given:
         def invoices = addInvoices(10)
         def invoice = invoices[0]
-        UUID buyerId = invoice.getTo().getId()
+        String buyerTaxId = invoice.getBuyer().getTaxIdentificationNumber()
 
         when:
         def response = mockMvc
                 .perform(get("/api/invoices")
-                        .queryParam("buyerId", buyerId.toString()))
+                        .queryParam("buyerTaxId", buyerTaxId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
 
         then:
-        def filteredInvoices = jsonListService.toObject(response, Invoice[])
+        def filteredInvoices = jsonListService.parseObject(response)
         filteredInvoices.size() == 1
         filteredInvoices[0] == invoice
     }
@@ -235,7 +245,6 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .andExpect(status().isAccepted())
 
         then:
-        def invoicesLeft = getAllInvoices()
         getAllInvoices().size() == numberOfInvoices - 1
     }
 
@@ -249,14 +258,12 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .andExpect(status().isNotFound())
     }
 
-
-
     private List<Invoice> addInvoices(int number) {
         List<Invoice> invoiceList = new ArrayList<>()
         for(int i = 0; i < number; i++) {
             Invoice invoice = InvoiceFixture.getInvoice()
             invoiceList.add(invoice)
-            String jsonString = jsonService.toJsonString(invoice)
+            String jsonString = jsonService.write(invoice).getJson()
             mockMvc.perform(post("/api/invoices").contentType(MediaType.APPLICATION_JSON).content(jsonString))
         }
         return invoiceList
@@ -268,7 +275,7 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-        return jsonListService.toObject(list, Invoice[])
+        return jsonListService.parseObject(list)
     }
 
     private void deleteInvoice(UUID id) {
@@ -289,6 +296,6 @@ abstract class InvoiceControllerIntegrationTest extends Specification{
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-        return jsonService.toObject(response, Invoice.class)
+        return jsonService.parseObject(response)
     }
 }

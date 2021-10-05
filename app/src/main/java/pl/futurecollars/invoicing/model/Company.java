@@ -1,26 +1,30 @@
 package pl.futurecollars.invoicing.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.UUID;
+import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Company {
 
-    @ApiModelProperty(value = "Id of company", required = true, example = "f77de595-58a1-4533-b96b-e493aee29e8a")
-    private final UUID id;
-    @ApiModelProperty(value = "Tax identification number of company", required = true, example = "1")
-    private final long taxIdentificationNumber;
-    @ApiModelProperty(value = "Address of company", required = true, example = "ul. Krótka 22, Warszawa 04-988")
-    private final String address;
+    @ApiModelProperty(value = "Name of company", required = true, example = "PepsiCo")
+    private String name;
 
-    @JsonCreator
-    public Company(@JsonProperty("taxIdentificationNumber") long taxIdentificationNumber,
-                   @JsonProperty("address") String address) {
-        this.taxIdentificationNumber = taxIdentificationNumber;
-        this.address = address;
-        this.id = UUID.randomUUID();
-    }
+    @ApiModelProperty(value = "Tax identification number of company", required = true, example = "1002020100")
+    private String taxIdentificationNumber;
+
+    @ApiModelProperty(value = "Address of company", required = true, example = "ul. Krótka 22, Warszawa 04-988")
+    private String address;
+
+    @ApiModelProperty(value = "Health insurance", required = true, example = "4250.9")
+    private BigDecimal healthInsurance;
+
+    @ApiModelProperty(value = "Pension insurance", required = true, example = "900.3")
+    private BigDecimal pensionInsurance;
 }
