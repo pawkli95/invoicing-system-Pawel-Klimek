@@ -8,3 +8,11 @@ logging:
       futurecollars:
         invoicing:
           db: DEBUG
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: haslo
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: false
