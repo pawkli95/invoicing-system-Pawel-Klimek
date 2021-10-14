@@ -63,8 +63,8 @@ class InvoiceServiceUnitTest extends Specification {
     def "should filter database"() {
         given: "a list of invoices and a Predicate"
         database.getAll() >> [invoice]
-        long taxNumber = invoice.getFrom().getTaxIdentificationNumber()
-        Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getFrom().getTaxIdentificationNumber() == taxNumber
+        String taxId = invoice.getSeller().getTaxIdentificationNumber()
+        Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getSeller().getTaxIdentificationNumber().equals(taxId)
 
         when: "we ask invoice service to filter the database based on Predicate"
         List<Invoice> invoiceList = invoiceService.filter(invoicePredicate)

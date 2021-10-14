@@ -1,7 +1,7 @@
 invoicing-system:
   database: fileTest
-  invoicesFile: src/test/resources/invoicesTest.txt
-  idsFile: src/test/resources/idsTest.txt
+  invoicesFile: src/test/resources/invoicesTest3.txt
+  idsFile: src/test/resources/idsTest3.txt
 
 
 

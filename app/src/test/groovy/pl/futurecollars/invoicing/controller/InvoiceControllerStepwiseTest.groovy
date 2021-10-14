@@ -1,8 +1,10 @@
 package pl.futurecollars.invoicing.controller
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.json.JacksonTester
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -17,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureJsonTesters
 @Stepwise
 @ActiveProfiles("fileTest")
 class InvoiceControllerStepwiseTest extends Specification {
@@ -24,9 +27,11 @@ class InvoiceControllerStepwiseTest extends Specification {
     @Autowired
     private MockMvc mockMvc
 
-    JsonService<Invoice> jsonInvoiceService = new JsonService<>()
+    @Autowired
+    JacksonTester<Invoice> jsonInvoiceService
 
-    JsonService<Invoice[]> jsonInvoiceListService = new JsonService<>()
+    @Autowired
+    JacksonTester<List<Invoice>> jsonInvoiceListService
 
     @Shared Invoice invoice = InvoiceFixture.getInvoice()
     @Shared Invoice updatedInvoice = InvoiceFixture.getInvoice()
@@ -50,7 +55,7 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should save invoice"() {
         given:
-        String jsonString = jsonInvoiceService.toJsonString(invoice)
+        String jsonString = jsonInvoiceService.write(invoice).getJson()
 
         when:
         def response = mockMvc
@@ -63,7 +68,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == invoice
+        jsonInvoiceService.parseObject(response) == invoice
     }
 
     def "should return invoice by id"() {
@@ -79,7 +84,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == invoice
+        jsonInvoiceService.parseObject(response) == invoice
 
     }
 
@@ -93,7 +98,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        def invoices = jsonInvoiceListService.toObject(response, Invoice[])
+        def invoices = jsonInvoiceListService.parseObject(response)
         invoices.size() == 1
         invoices[0] == invoice
     }
@@ -116,21 +121,21 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should filter the database"() {
         given:
-        UUID sellerId = invoice.getFrom().getId()
-        UUID buyerId = invoice.getTo().getId()
+        String sellerTaxId = invoice.getSeller().getTaxIdentificationNumber()
+        String buyerTaxId = invoice.getBuyer().getTaxIdentificationNumber()
 
         when:
         def response = mockMvc
                 .perform(get("/api/invoices")
-                        .queryParam("sellerId", sellerId.toString())
-                        .queryParam("buyerId", buyerId.toString()))
+                        .queryParam("sellerTaxId", sellerTaxId)
+                        .queryParam("buyerTaxId", buyerTaxId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
 
         then:
-        def invoices = jsonInvoiceListService.toObject(response, Invoice[])
+        def invoices = jsonInvoiceListService.parseObject(response)
         invoices.size() == 1
         invoices[0] == invoice
     }
@@ -138,7 +143,7 @@ class InvoiceControllerStepwiseTest extends Specification {
     def "should update the invoice"() {
         given:
         updatedInvoice.setId(invoice.getId())
-        String updatedJsonString = jsonInvoiceService.toJsonString(updatedInvoice)
+        String updatedJsonString = jsonInvoiceService.write(updatedInvoice).getJson()
 
         expect:
         mockMvc
@@ -161,13 +166,13 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == updatedInvoice
+        jsonInvoiceService.parseObject(response) == updatedInvoice
     }
 
     def "should return 404 Not Found when trying to update nonexistent invoice"() {
         given:
         Invoice invalidInvoice = InvoiceFixture.getInvoice()
-        String jsonString = jsonInvoiceService.toJsonString(invalidInvoice)
+        String jsonString = jsonInvoiceService.write(invalidInvoice).getJson()
 
         when:
         def response = mockMvc
@@ -209,7 +214,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-        return jsonInvoiceListService.toObject(list, Invoice[])
+        return jsonInvoiceListService.parseObject(list)
     }
 
     private void deleteInvoice(UUID id) {

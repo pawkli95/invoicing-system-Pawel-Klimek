@@ -1,18 +1,21 @@
 package pl.futurecollars.invoicing.controller
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.json.JacksonTester
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.fixtures.CompanyFixture
 import pl.futurecollars.invoicing.fixtures.InvoiceEntryFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.TaxCalculation
-import pl.futurecollars.invoicing.service.TaxCalculatorService
+import pl.futurecollars.invoicing.model.Vat
 import pl.futurecollars.invoicing.utils.JsonService
+import spock.lang.Shared
 import spock.lang.Specification
 import java.time.LocalDateTime
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -20,76 +23,127 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureJsonTesters
 abstract class TaxCalculatorControllerTest extends Specification {
-
-    @Autowired
-    TaxCalculatorService taxCalculatorService
 
     @Autowired
     MockMvc mockMvc
 
     @Autowired
-    Database database
+    JacksonTester<Invoice> invoiceJsonService
 
-    JsonService<Invoice> invoiceJsonService = new JsonService<>()
+    @Autowired
+    JacksonTester<TaxCalculation> taxCalculationJsonService
 
-    JsonService<TaxCalculation> taxCalculationJsonService = new JsonService<>()
+    @Autowired
+    JacksonTester<List<Invoice>> invoiceListService
 
-    JsonService<Invoice[]> invoiceListService = new JsonService<>()
+    @Autowired
+    JacksonTester<Company> companyJsonService
 
+    @Shared
     Company company1 = CompanyFixture.getCompany()
 
-    Company company2 = CompanyFixture.getCompany()
-
-    Invoice invoice1
-
-    Invoice invoice2
-
-    def "should calculate tax"() {
+    def "should calculate tax without personal car expenses"() {
         given:
         deleteInvoices()
-        addInvoices()
-        long taxId = company1.getTaxIdentificationNumber()
+        addInvoicesWithoutPersonalCarEntries()
+        String companyJson = companyJsonService.write(company1).getJson()
 
         when:
         def response = mockMvc
-                .perform(get("/api/tax/" + taxId))
+                .perform(post("/api/tax")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(companyJson))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
 
         then:
-        TaxCalculation taxCalculation = taxCalculationJsonService.toObject(response, TaxCalculation.class)
-        taxCalculation.getIncome() == new BigDecimal(4200)
-        taxCalculation.getCosts() == new BigDecimal(2000)
-        taxCalculation.getEarnings() == new BigDecimal(2200)
-        taxCalculation.getIncomingVat() == new BigDecimal(966)
-        taxCalculation.getOutgoingVat() == new BigDecimal(460)
-        taxCalculation.getVatToReturn() == new BigDecimal(506)
+        TaxCalculation taxCalculation = taxCalculationJsonService.parseObject(response)
+        taxCalculation.getIncome() == BigDecimal.valueOf(4200)
+        taxCalculation.getCosts() == BigDecimal.valueOf(2000)
+        taxCalculation.getIncomeMinusCosts() == BigDecimal.valueOf(2200)
+        taxCalculation.getIncomingVat() == BigDecimal.valueOf(966)
+        taxCalculation.getOutgoingVat() == BigDecimal.valueOf(460)
+        taxCalculation.getVatToReturn() == BigDecimal.valueOf(506)
+        taxCalculation.getPensionInsurance() == BigDecimal.valueOf(500)
+        taxCalculation.getIncomeMinusCostsMinusPensionInsurance() == BigDecimal.valueOf(1700)
+        taxCalculation.getTaxCalculationBase() == BigDecimal.valueOf(1700)
+        taxCalculation.getIncomeTax() == BigDecimal.valueOf(323)
+        taxCalculation.getHealthInsurance9() == BigDecimal.valueOf(90)
+        taxCalculation.getHealthInsurance775() == BigDecimal.valueOf(77.5)
+        taxCalculation.getIncomeTaxMinusHealthInsurance() == BigDecimal.valueOf(245.5)
+        taxCalculation.getFinalIncomeTaxValue() == BigDecimal.valueOf(245)
+    }
+
+    def "should calculate tax with personal car expenses"() {
+        given:
+        deleteInvoices()
+        addInvoicesWithPersonalCarEntries()
+        String companyJson = companyJsonService.write(company1).getJson()
+
+        when:
+        def response = mockMvc
+                .perform(post("/api/tax")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(companyJson))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
+
+        then:
+        TaxCalculation taxCalculation = taxCalculationJsonService.parseObject(response)
+        taxCalculation.getIncome() == BigDecimal.valueOf(4200)
+        taxCalculation.getCosts() == BigDecimal.valueOf(2138)
+        taxCalculation.getIncomeMinusCosts() == BigDecimal.valueOf(2062)
+        taxCalculation.getIncomingVat() == BigDecimal.valueOf(966)
+        taxCalculation.getOutgoingVat() == BigDecimal.valueOf(322)
+        taxCalculation.getVatToReturn() == BigDecimal.valueOf(644)
+        taxCalculation.getPensionInsurance() == BigDecimal.valueOf(500)
+        taxCalculation.getIncomeMinusCostsMinusPensionInsurance() == BigDecimal.valueOf(1562)
+        taxCalculation.getTaxCalculationBase() == BigDecimal.valueOf(1562)
+        taxCalculation.getIncomeTax() == BigDecimal.valueOf(296.78)
+        taxCalculation.getHealthInsurance9() == BigDecimal.valueOf(90)
+        taxCalculation.getHealthInsurance775() == BigDecimal.valueOf(77.5)
+        taxCalculation.getIncomeTaxMinusHealthInsurance() == BigDecimal.valueOf(219.28)
+        taxCalculation.getFinalIncomeTaxValue() == BigDecimal.valueOf(219)
 
     }
 
-    def "should return 404 http status when tax id doesn't exist"() {
+    def "should return 404 NotFound http status when tax id doesn't exist"() {
         given:
         deleteInvoices()
-        long taxId = 1
+        String companyJson = companyJsonService.write(company1).getJson()
 
         expect:
-        def response = mockMvc
-                .perform(get("/api/tax/" + taxId))
+                 mockMvc
+                .perform(post("/api/tax/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(companyJson))
                 .andExpect(status().isNotFound())
     }
 
-    def void addInvoices() {
-        invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryList(6))
-        invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryList(4))
+    void addInvoicesWithPersonalCarEntries() {
+        Company company2 = CompanyFixture.getCompany()
+        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
+        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
+        addInvoice(invoice1)
+        addInvoice(invoice2)
+    }
+
+    void addInvoicesWithoutPersonalCarEntries() {
+        Company company2 = CompanyFixture.getCompany()
+        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
+        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
         addInvoice(invoice1)
         addInvoice(invoice2)
     }
 
     void addInvoice(Invoice invoice) {
-        String jsonString = invoiceJsonService.toJsonString(invoice)
+        String jsonString = invoiceJsonService.write(invoice).getJson()
         mockMvc
                 .perform(post("/api/invoices")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +156,7 @@ abstract class TaxCalculatorControllerTest extends Specification {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-        List<Invoice> list = invoiceListService.toObject(response, Invoice[])
+        List<Invoice> list = invoiceListService.parseObject(response)
         for(Invoice i : list) {
             deleteInvoice(i)
         }

@@ -19,12 +19,6 @@ abstract class TaxCalculatorServiceIntegrationTest extends Specification {
     @Shared
     Company company1 = CompanyFixture.getCompany()
 
-    @Shared
-    Invoice invoice1
-
-    @Shared
-    Invoice invoice2
-
     abstract Database getDatabase();
 
     def setup() {
@@ -32,40 +26,79 @@ abstract class TaxCalculatorServiceIntegrationTest extends Specification {
         taxCalculatorService = new TaxCalculatorService(database)
     }
 
-    def "should calculate tax"() {
+    def "should calculate tax without personal car expenses"() {
         given:
         deleteInvoices()
-        addInvoices()
-        long taxId = company1.getTaxIdentificationNumber()
+        addInvoicesWithoutPersonalCarEntries()
 
         when:
-        TaxCalculation taxCalculation = taxCalculatorService.getTaxCalculation(taxId)
+        TaxCalculation taxCalculation = taxCalculatorService.getTaxCalculation(company1)
 
         then:
-        taxCalculation.getIncome() == new BigDecimal(4200)
-        taxCalculation.getCosts() == new BigDecimal(2000)
-        taxCalculation.getEarnings() == new BigDecimal(2200)
-        taxCalculation.getIncomingVat() == new BigDecimal(966)
-        taxCalculation.getOutgoingVat() == new BigDecimal(460)
-        taxCalculation.getVatToReturn() == new BigDecimal(506)
+        taxCalculation.getIncome() == BigDecimal.valueOf(4200)
+        taxCalculation.getCosts() == BigDecimal.valueOf(2000)
+        taxCalculation.getIncomeMinusCosts() == BigDecimal.valueOf(2200)
+        taxCalculation.getIncomingVat() == BigDecimal.valueOf(966)
+        taxCalculation.getOutgoingVat() == BigDecimal.valueOf(460)
+        taxCalculation.getVatToReturn() == BigDecimal.valueOf(506)
+        taxCalculation.getPensionInsurance() == BigDecimal.valueOf(500)
+        taxCalculation.getIncomeMinusCostsMinusPensionInsurance() == BigDecimal.valueOf(1700)
+        taxCalculation.getTaxCalculationBase() == BigDecimal.valueOf(1700)
+        taxCalculation.getIncomeTax() == BigDecimal.valueOf(323)
+        taxCalculation.getHealthInsurance9() == BigDecimal.valueOf(90)
+        taxCalculation.getHealthInsurance775() == BigDecimal.valueOf(77.5)
+        taxCalculation.getIncomeTaxMinusHealthInsurance() == BigDecimal.valueOf(245.5)
+        taxCalculation.getFinalIncomeTaxValue() == BigDecimal.valueOf(245)
     }
 
-    def "should throw NoSuchElementException when tax id doesn't exist"() {
+    def "should calculate tax with personal car expenses"() {
         given:
         deleteInvoices()
-        long taxId = 1
+        addInvoicesWithPersonalCarEntries()
 
         when:
-        taxCalculatorService.getTaxCalculation(taxId)
+        TaxCalculation taxCalculation = taxCalculatorService.getTaxCalculation(company1)
+
+        then:
+        taxCalculation.getIncome() == BigDecimal.valueOf(4200)
+        taxCalculation.getCosts() == BigDecimal.valueOf(2138)
+        taxCalculation.getIncomeMinusCosts() == BigDecimal.valueOf(2062)
+        taxCalculation.getIncomingVat() == BigDecimal.valueOf(966)
+        taxCalculation.getOutgoingVat() == BigDecimal.valueOf(322)
+        taxCalculation.getVatToReturn() == BigDecimal.valueOf(644)
+        taxCalculation.getPensionInsurance() == BigDecimal.valueOf(500)
+        taxCalculation.getIncomeMinusCostsMinusPensionInsurance() == BigDecimal.valueOf(1562)
+        taxCalculation.getTaxCalculationBase() == BigDecimal.valueOf(1562)
+        taxCalculation.getIncomeTax() == BigDecimal.valueOf(296.78)
+        taxCalculation.getHealthInsurance9() == BigDecimal.valueOf(90)
+        taxCalculation.getHealthInsurance775() == BigDecimal.valueOf(77.5)
+        taxCalculation.getIncomeTaxMinusHealthInsurance() == BigDecimal.valueOf(219.28)
+        taxCalculation.getFinalIncomeTaxValue() == BigDecimal.valueOf(219)
+    }
+
+    def "should throw NoSuchElementException when tax id is not in database"() {
+        given:
+        deleteInvoices()
+
+        when:
+        taxCalculatorService.getTaxCalculation(company1)
 
         then:
         thrown(NoSuchElementException)
     }
 
-    void addInvoices() {
+    void addInvoicesWithPersonalCarEntries() {
         Company company2 = CompanyFixture.getCompany()
-        invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryList(6))
-        invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryList(4))
+        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
+        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
+        database.save(invoice1)
+        database.save(invoice2)
+    }
+
+    void addInvoicesWithoutPersonalCarEntries() {
+        Company company2 = CompanyFixture.getCompany()
+        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
+        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
         database.save(invoice1)
         database.save(invoice2)
     }

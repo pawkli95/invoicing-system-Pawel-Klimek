@@ -28,8 +28,8 @@ public interface InvoiceControllerInterface {
                                          @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
                                          @RequestParam(value = "after", required = false)
                                          @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
-                                         @RequestParam(value = "sellerId", required = false) UUID sellerId,
-                                         @RequestParam(value = "buyerId", required = false) UUID buyerId);
+                                         @RequestParam(value = "sellerTaxId", required = false) String sellerTaxId,
+                                         @RequestParam(value = "buyerTaxId", required = false) String buyerTaxId);
 
     @ApiOperation(value = "Get invoice by id")
     @GetMapping("/{id}")
