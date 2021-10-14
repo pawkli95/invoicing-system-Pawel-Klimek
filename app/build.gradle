@@ -65,9 +65,14 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
 
     implementation "io.springfox:springfox-boot-starter:${springFoxStarterVersion}"
     implementation "io.springfox:springfox-swagger-ui:${springFoxUiVersion}"
+
+    runtimeOnly 'org.postgresql:postgresql:42.2.19'
+    implementation 'org.flywaydb:flyway-core:8.0.1'
+
 }
 
 application {
