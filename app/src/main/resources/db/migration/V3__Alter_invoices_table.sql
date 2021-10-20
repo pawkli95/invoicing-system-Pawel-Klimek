@@ -1,13 +1,13 @@
 ALTER TABLE invoices 
-ADD COLUMN buyer varchar(10) NOT NULL,
-ADD COLUMN seller varchar(10) NOT NULL;
+ADD COLUMN buyer_tax_id varchar(10) NOT NULL,
+ADD COLUMN seller_tax_id varchar(10) NOT NULL;
 
 ALTER TABLE invoices
-ADD CONSTRAINT buyer_fk FOREIGN KEY (buyer)
+ADD CONSTRAINT buyer_fk FOREIGN KEY (buyer_tax_id)
 REFERENCES companies(tax_id);
 
 ALTER TABLE invoices
-ADD CONSTRAINT seller_fk FOREIGN KEY (seller)
+ADD CONSTRAINT seller_fk FOREIGN KEY (seller_tax_id)
 REFERENCES companies(tax_id);
 
 

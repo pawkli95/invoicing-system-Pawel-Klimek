@@ -5,11 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.UUID;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
+@AllArgsConstructor
 @Data
 public class InvoiceEntry {
 
+    private UUID id;
     @ApiModelProperty(value = "Description of product", required = true, example = "Paliwo na Orlenie")
     private final String description;
     @ApiModelProperty(value = "Price of product", required = true, example = "200")

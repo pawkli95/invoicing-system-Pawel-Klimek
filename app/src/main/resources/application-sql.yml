@@ -1,0 +1,5 @@
+invoicing-system:
+  database: sql
+spring:
+  flyway:
+    enabled: false

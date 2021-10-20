@@ -4,9 +4,12 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @NoArgsConstructor
 public class Invoice {
@@ -23,7 +26,6 @@ public class Invoice {
     private List<InvoiceEntry> invoiceEntries;
 
     public Invoice(LocalDateTime date, Company seller, Company buyer, List<InvoiceEntry> invoiceEntries) {
-        this.id = UUID.randomUUID();
         this.date = date;
         this.seller = seller;
         this.buyer = buyer;
