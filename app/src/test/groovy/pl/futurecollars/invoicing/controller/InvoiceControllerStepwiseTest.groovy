@@ -8,9 +8,9 @@ import org.springframework.boot.test.json.JacksonTester
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import pl.futurecollars.invoicing.dto.InvoiceDto
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -28,13 +28,13 @@ class InvoiceControllerStepwiseTest extends Specification {
     private MockMvc mockMvc
 
     @Autowired
-    JacksonTester<Invoice> jsonInvoiceService
+    JacksonTester<InvoiceDto> jsonInvoiceService
 
     @Autowired
-    JacksonTester<List<Invoice>> jsonInvoiceListService
+    JacksonTester<List<InvoiceDto>> jsonInvoiceListService
 
-    @Shared Invoice invoice = InvoiceFixture.getInvoice()
-    @Shared Invoice updatedInvoice = InvoiceFixture.getInvoice()
+    @Shared InvoiceDto invoiceDto = InvoiceFixture.getInvoiceDto()
+    @Shared InvoiceDto updatedInvoiceDto = InvoiceFixture.getInvoiceDto()
 
     def "should return empty list"() {
         given:
@@ -55,7 +55,7 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should save invoice"() {
         given:
-        String jsonString = jsonInvoiceService.write(invoice).getJson()
+        String jsonString = jsonInvoiceService.write(invoiceDto).getJson()
 
         when:
         def response = mockMvc
@@ -68,12 +68,12 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.parseObject(response) == invoice
+        jsonInvoiceService.parseObject(response) == invoiceDto
     }
 
     def "should return invoice by id"() {
         given:
-        UUID id = invoice.getId()
+        UUID id = invoiceDto.getId()
 
         when:
         def response = mockMvc
@@ -84,7 +84,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.parseObject(response) == invoice
+        jsonInvoiceService.parseObject(response) == invoiceDto
 
     }
 
@@ -100,7 +100,7 @@ class InvoiceControllerStepwiseTest extends Specification {
         then:
         def invoices = jsonInvoiceListService.parseObject(response)
         invoices.size() == 1
-        invoices[0] == invoice
+        invoices[0] == invoiceDto
     }
 
     def "should return 404 NotFound status when getting invoice by id which doesn't exist"() {
@@ -121,8 +121,8 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should filter the database"() {
         given:
-        String sellerTaxId = invoice.getSeller().getTaxIdentificationNumber()
-        String buyerTaxId = invoice.getBuyer().getTaxIdentificationNumber()
+        String sellerTaxId = invoiceDto.getSeller().getTaxIdentificationNumber()
+        String buyerTaxId = invoiceDto.getBuyer().getTaxIdentificationNumber()
 
         when:
         def response = mockMvc
@@ -137,13 +137,13 @@ class InvoiceControllerStepwiseTest extends Specification {
         then:
         def invoices = jsonInvoiceListService.parseObject(response)
         invoices.size() == 1
-        invoices[0] == invoice
+        invoices[0] == invoiceDto
     }
 
     def "should update the invoice"() {
         given:
-        updatedInvoice.setId(invoice.getId())
-        String updatedJsonString = jsonInvoiceService.write(updatedInvoice).getJson()
+        updatedInvoiceDto.setId(invoiceDto.getId())
+        String updatedJsonString = jsonInvoiceService.write(updatedInvoiceDto).getJson()
 
         expect:
         mockMvc
@@ -155,7 +155,7 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should return updated invoice by id"() {
         given:
-        UUID id = invoice.getId()
+        UUID id = invoiceDto.getId()
 
         when:
         def response = mockMvc
@@ -166,13 +166,13 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.parseObject(response) == updatedInvoice
+        jsonInvoiceService.parseObject(response) == updatedInvoiceDto
     }
 
     def "should return 404 Not Found when trying to update nonexistent invoice"() {
         given:
-        Invoice invalidInvoice = InvoiceFixture.getInvoice()
-        String jsonString = jsonInvoiceService.write(invalidInvoice).getJson()
+        InvoiceDto invalidInvoiceDto = InvoiceFixture.getInvoiceDto()
+        String jsonString = jsonInvoiceService.write(invalidInvoiceDto).getJson()
 
         when:
         def response = mockMvc
@@ -190,7 +190,7 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "should delete invoice by id"() {
         given:
-        UUID id = invoice.getId()
+        UUID id = invoiceDto.getId()
 
         expect:
         mockMvc
@@ -208,7 +208,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .andExpect(status().isNotFound())
     }
 
-    private List<Invoice> getAllInvoices() {
+    private List<InvoiceDto> getAllInvoices() {
         def list = mockMvc
                 .perform(get("/api/invoices"))
                 .andReturn()
@@ -222,8 +222,8 @@ class InvoiceControllerStepwiseTest extends Specification {
     }
 
     private void deleteAllInvoices() {
-        List<Invoice> invoiceList = getAllInvoices()
-        for(Invoice invoice : invoiceList) {
+        List<InvoiceDto> invoiceList = getAllInvoices()
+        for(InvoiceDto invoice : invoiceList) {
             UUID id = invoice.getId()
             deleteInvoice(id)
         }

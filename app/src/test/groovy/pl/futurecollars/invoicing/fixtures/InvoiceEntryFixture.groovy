@@ -10,7 +10,13 @@ class InvoiceEntryFixture {
         if(id % 2 == 0) {
             isPersonalCar = true;
         }
-        return new InvoiceEntry("Product $id", new BigDecimal(200 * id), Vat.VAT_23, isPersonalCar);
+        return InvoiceEntry.builder()
+                .id(UUID.randomUUID())
+                .description("Product $id")
+                .price(BigDecimal.valueOf(200 * id))
+                .vatRate(Vat.VAT_23)
+                .personalCar(isPersonalCar)
+                .build()
     }
 
     static List<InvoiceEntry> getInvoiceEntryListWithPersonalCar(int number) {
@@ -22,7 +28,13 @@ class InvoiceEntryFixture {
     }
 
     static InvoiceEntry getInvoiceEntry(int id) {
-        return new InvoiceEntry("Product $id", new BigDecimal(200 * id), Vat.VAT_23, false);
+        return InvoiceEntry.builder()
+                .id(UUID.randomUUID())
+                .description("Product $id")
+                .price(BigDecimal.valueOf(200 * id))
+                .vatRate(Vat.VAT_23)
+                .personalCar(false)
+                .build()
     }
 
     static List<InvoiceEntry> getInvoiceEntryListWithoutPersonalCar(int number) {

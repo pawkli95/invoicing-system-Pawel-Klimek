@@ -6,7 +6,7 @@ import pl.futurecollars.invoicing.fixtures.InvoiceEntryFixture
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.TaxCalculation
+import pl.futurecollars.invoicing.dto.TaxCalculation
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -17,14 +17,12 @@ class TaxCalculatorServiceUnitTest extends Specification {
 
     TaxCalculatorService taxCalculatorService = new TaxCalculatorService(database)
 
-    Invoice invoice = InvoiceFixture.getInvoice()
-
     def "should calculate tax without personal car expenses"() {
         given: "invoices in database without personal car expenses"
         Company company1 = CompanyFixture.getCompany()
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
+        Invoice invoice1 = new Invoice(UUID.randomUUID(),"number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
+        Invoice invoice2 = new Invoice(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
         database.getAll() >> [invoice1, invoice2]
 
         when:"we ask tax calculator service to calculate tax"
@@ -51,8 +49,8 @@ class TaxCalculatorServiceUnitTest extends Specification {
         given:"invoices in database with personal car expenses"
         Company company1 = CompanyFixture.getCompany()
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
+        Invoice invoice1 = new Invoice(UUID.randomUUID(), "number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
+        Invoice invoice2 = new Invoice(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
         database.getAll() >> [invoice1, invoice2]
 
         when:"we ask tax calculator service to calculate tax"
@@ -81,7 +79,7 @@ class TaxCalculatorServiceUnitTest extends Specification {
         Company company = CompanyFixture.getCompany()
 
         when:"we ask tax calculator service to calculate tax"
-        TaxCalculation taxCalculation = taxCalculatorService.getTaxCalculation(company)
+        taxCalculatorService.getTaxCalculation(company)
 
         then:"NoSuchElementException is thrown"
         thrown(NoSuchElementException)

@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import pl.futurecollars.invoicing.dto.InvoiceDto
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
-import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.service.InvoiceService
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
@@ -22,16 +22,16 @@ class InvoiceControllerUnitTest extends Specification {
     @SpringBean
     InvoiceService invoiceService = Mock()
 
-    Invoice invoice = InvoiceFixture.getInvoice()
+    InvoiceDto invoiceDto = InvoiceFixture.getInvoiceDto()
 
-    JsonService<Invoice> jsonInvoiceService = new JsonService<>()
+    JsonService<InvoiceDto> jsonInvoiceService = new JsonService<>()
 
-    JsonService<Invoice[]> jsonInvoiceListService = new JsonService<>()
+    JsonService<InvoiceDto[]> jsonInvoiceListService = new JsonService<>()
 
     def "should save invoice to database"() {
         given:
-        invoiceService.saveInvoice(invoice) >> invoice
-        String jsonString = jsonInvoiceService.toJsonString(invoice)
+        invoiceService.saveInvoice(invoiceDto) >> invoiceDto
+        String jsonString = jsonInvoiceService.toJsonString(invoiceDto)
 
         when:
         def response = mockMvc
@@ -44,13 +44,13 @@ class InvoiceControllerUnitTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == invoice
+        jsonInvoiceService.toObject(response, InvoiceDto.class) == invoiceDto
     }
 
     def "should return invoice by id when it exists"() {
         given:
-        UUID id = invoice.getId()
-        invoiceService.getById(id) >> invoice
+        UUID id = invoiceDto.getId()
+        invoiceService.getById(id) >> invoiceDto
 
         when:
         def response = mockMvc
@@ -61,7 +61,7 @@ class InvoiceControllerUnitTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == invoice
+        jsonInvoiceService.toObject(response, InvoiceDto.class) == invoiceDto
 
     }
 
@@ -84,7 +84,7 @@ class InvoiceControllerUnitTest extends Specification {
 
     def "should return list of invoices"() {
         given:
-        invoiceService.getAll() >> [invoice]
+        invoiceService.getAll() >> [invoiceDto]
 
         when:
         def response = mockMvc
@@ -95,16 +95,16 @@ class InvoiceControllerUnitTest extends Specification {
                 .getContentAsString()
 
         then:
-        def invoices = jsonInvoiceListService.toObject(response, Invoice[])
+        def invoices = jsonInvoiceListService.toObject(response, InvoiceDto[])
         invoices.size() == 1
-        invoices[0] == invoice
+        invoices[0] == invoiceDto
     }
 
     def "should update invoice"() {
         given:
-        Invoice updatedInvoice = InvoiceFixture.getInvoice()
-        String jsonString = jsonInvoiceService.toJsonString(updatedInvoice)
-        invoiceService.updateInvoice(updatedInvoice) >> updatedInvoice
+        InvoiceDto updatedInvoiceDto = InvoiceFixture.getInvoiceDto()
+        String jsonString = jsonInvoiceService.toJsonString(updatedInvoiceDto)
+        invoiceService.updateInvoice(updatedInvoiceDto) >> updatedInvoiceDto
 
         when:
         def response = mockMvc
@@ -117,7 +117,7 @@ class InvoiceControllerUnitTest extends Specification {
                 .getContentAsString()
 
         then:
-        jsonInvoiceService.toObject(response, Invoice.class) == updatedInvoice
+        jsonInvoiceService.toObject(response, InvoiceDto.class) == updatedInvoiceDto
     }
 
     def "should delete invoice"() {

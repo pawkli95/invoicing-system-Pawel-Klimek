@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.model;
+package pl.futurecollars.invoicing.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;

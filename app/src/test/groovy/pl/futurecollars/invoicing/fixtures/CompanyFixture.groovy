@@ -12,10 +12,10 @@ class CompanyFixture {
             int r = random.nextInt(10)
             taxId.append(r);
         }
-       return Company
-               .builder()
-               .name("Firma")
+       return Company.builder()
+                .id(UUID.randomUUID())
                .taxIdentificationNumber(taxId.toString())
+               .name("Firma")
                .address("Firmowa 1")
                .pensionInsurance(BigDecimal.valueOf(500))
                .healthInsurance(BigDecimal.valueOf(1000))

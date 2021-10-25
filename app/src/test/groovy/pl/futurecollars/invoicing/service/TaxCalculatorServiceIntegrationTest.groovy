@@ -5,7 +5,7 @@ import pl.futurecollars.invoicing.fixtures.CompanyFixture
 import pl.futurecollars.invoicing.fixtures.InvoiceEntryFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.TaxCalculation
+import pl.futurecollars.invoicing.dto.TaxCalculation
 import spock.lang.Shared
 import spock.lang.Specification
 import java.time.LocalDateTime
@@ -89,16 +89,16 @@ abstract class TaxCalculatorServiceIntegrationTest extends Specification {
 
     void addInvoicesWithPersonalCarEntries() {
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
+        Invoice invoice1 = new Invoice(UUID.randomUUID(), "number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
+        Invoice invoice2 = new Invoice(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
         database.save(invoice1)
         database.save(invoice2)
     }
 
     void addInvoicesWithoutPersonalCarEntries() {
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
+        Invoice invoice1 = new Invoice(UUID.randomUUID(), "number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
+        Invoice invoice2 = new Invoice(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
         database.save(invoice1)
         database.save(invoice2)
     }

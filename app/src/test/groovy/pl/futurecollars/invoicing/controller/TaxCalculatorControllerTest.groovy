@@ -7,14 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.json.JacksonTester
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import pl.futurecollars.invoicing.dto.InvoiceDto
 import pl.futurecollars.invoicing.fixtures.CompanyFixture
 import pl.futurecollars.invoicing.fixtures.InvoiceEntryFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
-import pl.futurecollars.invoicing.model.TaxCalculation
-import pl.futurecollars.invoicing.model.Vat
-import pl.futurecollars.invoicing.utils.JsonService
+import pl.futurecollars.invoicing.dto.TaxCalculation
 import spock.lang.Shared
 import spock.lang.Specification
 import java.time.LocalDateTime
@@ -30,13 +28,13 @@ abstract class TaxCalculatorControllerTest extends Specification {
     MockMvc mockMvc
 
     @Autowired
-    JacksonTester<Invoice> invoiceJsonService
+    JacksonTester<InvoiceDto> invoiceJsonService
 
     @Autowired
     JacksonTester<TaxCalculation> taxCalculationJsonService
 
     @Autowired
-    JacksonTester<List<Invoice>> invoiceListService
+    JacksonTester<List<InvoiceDto>> invoiceListService
 
     @Autowired
     JacksonTester<Company> companyJsonService
@@ -128,21 +126,21 @@ abstract class TaxCalculatorControllerTest extends Specification {
 
     void addInvoicesWithPersonalCarEntries() {
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
+        InvoiceDto invoice1 = new InvoiceDto(UUID.randomUUID(), "number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(6))
+        InvoiceDto invoice2 = new InvoiceDto(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
         addInvoice(invoice1)
         addInvoice(invoice2)
     }
 
     void addInvoicesWithoutPersonalCarEntries() {
         Company company2 = CompanyFixture.getCompany()
-        Invoice invoice1 = new Invoice(LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
-        Invoice invoice2 = new Invoice(LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
+        InvoiceDto invoice1 = new InvoiceDto(UUID.randomUUID(), "number1", LocalDateTime.now(), company1, company2, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(6))
+        InvoiceDto invoice2 = new InvoiceDto(UUID.randomUUID(), "number2", LocalDateTime.now(), company2, company1, InvoiceEntryFixture.getInvoiceEntryListWithoutPersonalCar(4))
         addInvoice(invoice1)
         addInvoice(invoice2)
     }
 
-    void addInvoice(Invoice invoice) {
+    void addInvoice(InvoiceDto invoice) {
         String jsonString = invoiceJsonService.write(invoice).getJson()
         mockMvc
                 .perform(post("/api/invoices")
@@ -156,13 +154,13 @@ abstract class TaxCalculatorControllerTest extends Specification {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-        List<Invoice> list = invoiceListService.parseObject(response)
-        for(Invoice i : list) {
+        List<InvoiceDto> list = invoiceListService.parseObject(response)
+        for(InvoiceDto i : list) {
             deleteInvoice(i)
         }
     }
 
-    void deleteInvoice(Invoice invoice) {
+    void deleteInvoice(InvoiceDto invoice) {
         String id = invoice.getId().toString()
         mockMvc
                 .perform(delete("/api/invoices/" + id))

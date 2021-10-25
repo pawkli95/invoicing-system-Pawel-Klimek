@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.db.filebased
+package pl.futurecollars.invoicing.db.jpa
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -6,16 +6,16 @@ import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.DatabaseTest
 
-@ActiveProfiles("fileTest")
 @SpringBootTest
-class FileBasedDatabaseTest extends DatabaseTest {
+@ActiveProfiles("jpaTest")
+class JpaDatabaseTest extends DatabaseTest{
 
     @Autowired
-    FileBasedDatabase fileBasedDatabase;
+    Database jpaDatabase
 
     @Override
     Database getDatabase() {
-        return fileBasedDatabase
+        return jpaDatabase
     }
-}
 
+}

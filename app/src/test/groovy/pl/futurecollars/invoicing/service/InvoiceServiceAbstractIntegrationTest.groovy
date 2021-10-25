@@ -1,6 +1,9 @@
 package pl.futurecollars.invoicing.service
 
+import org.mapstruct.factory.Mappers
 import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.dto.InvoiceDto
+import pl.futurecollars.invoicing.dto.mappers.InvoiceMapper
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
@@ -9,33 +12,39 @@ import java.util.function.Predicate
 abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
 
     Database database
+
     InvoiceService invoiceService
-    Invoice invoice = InvoiceFixture.getInvoice()
+
+    InvoiceDto invoiceDto = InvoiceFixture.getInvoiceDto()
+
+    InvoiceMapper invoiceMapper = Mappers.getMapper(InvoiceMapper.class)
 
     abstract Database getDatabase();
 
     def setup() {
         database = getDatabase()
-        invoiceService = new InvoiceService(database)
+        invoiceService = new InvoiceService(database, invoiceMapper)
+        clearDatabase()
     }
 
     def "should save invoice to database"() {
         when: "we ask invoice service to save invoice"
-        invoiceService.saveInvoice(invoice)
+        invoiceService.saveInvoice(invoiceDto)
 
         then: "invoice is saved in database"
-        database.getById(invoice.getId()) == invoice
+        database.getById(invoiceDto.getId()) == invoiceMapper.toEntity(invoiceDto)
     }
 
     def "should get invoice by id from database"() {
         given: "invoice saved to database"
+        Invoice invoice = invoiceMapper.toEntity(invoiceDto)
         database.save(invoice)
 
         when: "we ask invoice service for invoice by id"
-        Invoice returnedInvoice = invoiceService.getById(invoice.getId())
+        InvoiceDto returnedInvoice = invoiceService.getById(invoice.getId())
 
         then: "invoice is returned"
-        returnedInvoice == invoice
+        returnedInvoice == invoiceDto
     }
 
     def "should throw exception when id is not used"() {
@@ -48,13 +57,13 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
 
     def "should get list of invoices"() {
         given: "invoice saved to database"
-        invoiceService.saveInvoice(invoice)
+        invoiceService.saveInvoice(invoiceDto)
 
         when: "we ask invoice service for a list of all invoices"
-        List<Invoice> invoiceList = invoiceService.getAll()
+        List<InvoiceDto> invoiceList = invoiceService.getAll()
 
         then: "list od invoices is returned"
-        invoiceList == [invoice]
+        invoiceList == [invoiceDto]
     }
 
     def "should get an empty list of invoices"() {
@@ -64,39 +73,38 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
 
     def "should filter database"() {
         given: "a list of invoices and a Predicate"
+        Invoice invoice = invoiceMapper.toEntity(invoiceDto)
         database.save(invoice)
         String taxId = invoice.getSeller().getTaxIdentificationNumber()
-        Predicate<Invoice> invoicePredicate = (Invoice invoice) -> invoice.getSeller().getTaxIdentificationNumber().equals(taxId)
+        Predicate<Invoice> invoicePredicate = (Invoice i) -> i.getSeller().getTaxIdentificationNumber().equals(taxId)
 
         when: "we ask invoice service to filter the database based on Predicate"
-        List<Invoice> invoiceList = invoiceService.filter(invoicePredicate)
+        List<InvoiceDto> invoiceList = invoiceService.filter(invoicePredicate)
 
         then: "database is filtered"
-        invoiceList == [invoice]
+        invoiceList == [invoiceDto]
     }
 
     def "should update invoice in database"() {
         given: "invoice saved to database"
+        Invoice invoice = invoiceMapper.toEntity(invoiceDto)
         database.save(invoice)
 
         and: "updated invoice"
-        Invoice updatedInvoice = InvoiceFixture.getInvoice()
+        InvoiceDto updatedInvoice = InvoiceFixture.getInvoiceDto()
         updatedInvoice.setId(invoice.getId())
 
         when: "we ask invoice service to update database"
         invoiceService.updateInvoice(updatedInvoice)
 
         then: "database is updated"
-        database.getById(updatedInvoice.getId()) == updatedInvoice
+        invoiceService.getById(updatedInvoice.getId()) == updatedInvoice
 
     }
 
     def "should throw exception when updating nonexistent invoice"() {
-        given: "random invoice"
-        Invoice invoice = InvoiceFixture.getInvoice()
-
         when: "we ask invoice service to update nonexistent invoice"
-        invoiceService.updateInvoice(invoice)
+        invoiceService.updateInvoice(invoiceDto)
 
         then: "exception is thrown"
         thrown(NoSuchElementException)
@@ -104,6 +112,7 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
 
     def "should delete invoice from database"() {
         given: "invoice saved to database"
+        Invoice invoice = InvoiceFixture.getInvoice()
         database.save(invoice)
 
         when: "we ask invoice service to delete invoice"
@@ -119,5 +128,11 @@ abstract class InvoiceServiceAbstractIntegrationTest extends Specification{
 
         then: "exception is thrown"
         thrown(NoSuchElementException)
+    }
+
+    def clearDatabase() {
+        for(Invoice invoice : database.getAll()) {
+            database.delete(invoice.getId())
+        }
     }
 }
