@@ -46,8 +46,8 @@ public class InMemoryDatabase implements Database<Invoice> {
     @Override
     public void delete(UUID id) throws NoSuchElementException {
         if (database.containsKey(id)) {
-                database.remove(id);
-                return;
+            database.remove(id);
+            return;
         }
         throw new NoSuchElementException();
     }

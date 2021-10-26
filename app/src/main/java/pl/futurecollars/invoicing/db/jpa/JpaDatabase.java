@@ -1,14 +1,14 @@
 package pl.futurecollars.invoicing.db.jpa;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.repositories.InvoiceRepository;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class JpaDatabase implements Database<Invoice> {
 
     @Override
     public Invoice save(Invoice invoice) {
-        if(invoice != null) {
+        if (invoice != null) {
             return invoiceRepository.save(invoice);
         }
         return null;
@@ -27,7 +27,7 @@ public class JpaDatabase implements Database<Invoice> {
     @Override
     public Invoice getById(UUID id) throws NoSuchElementException {
         Optional<Invoice> optional = invoiceRepository.findById(id);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return optional.get();
         }
         throw new NoSuchElementException();
@@ -40,15 +40,16 @@ public class JpaDatabase implements Database<Invoice> {
 
     @Override
     public Invoice update(Invoice updatedInvoice) throws NoSuchElementException {
-        if(updatedInvoice != null && invoiceRepository.existsById(updatedInvoice.getId())) {
+        if (updatedInvoice != null && invoiceRepository.existsById(updatedInvoice.getId())) {
             return invoiceRepository.save(updatedInvoice);
+        } else {
+            throw new NoSuchElementException();
         }
-        throw new NoSuchElementException();
     }
 
     @Override
     public void delete(UUID id) throws NoSuchElementException {
-        if(id != null && invoiceRepository.existsById(id)) {
+        if (id != null && invoiceRepository.existsById(id)) {
             invoiceRepository.deleteById(id);
         } else {
             throw new NoSuchElementException();

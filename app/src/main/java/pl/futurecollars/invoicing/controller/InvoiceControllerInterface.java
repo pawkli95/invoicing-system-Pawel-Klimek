@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.futurecollars.invoicing.dto.InvoiceDto;
-import pl.futurecollars.invoicing.model.Invoice;
 
 public interface InvoiceControllerInterface {
 

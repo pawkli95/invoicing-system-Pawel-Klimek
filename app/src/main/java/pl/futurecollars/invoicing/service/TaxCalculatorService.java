@@ -10,10 +10,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.dto.TaxCalculation;
 import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
-import pl.futurecollars.invoicing.dto.TaxCalculation;
 
 @Slf4j
 @Service

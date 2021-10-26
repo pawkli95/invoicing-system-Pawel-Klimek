@@ -23,19 +23,11 @@ public class FileBasedDatabase implements Database<Invoice> {
     @Override
     public Invoice save(Invoice invoice) {
         if (invoice != null) {
-            makeSureInvoiceIdIsUnique(invoice);
             writeInvoiceToDatabase(invoice);
             log.debug("Added invoice to file database");
             return invoice;
         }
         return null;
-    }
-
-    private void makeSureInvoiceIdIsUnique(Invoice invoice) {
-        List<String> idsUsed = getIdList();
-        while (idsUsed.contains(invoice.getId().toString())) {
-            invoice.setId(UUID.randomUUID());
-        }
     }
 
     private List<String> getIdList() {

@@ -5,6 +5,8 @@ import pl.futurecollars.invoicing.model.Vat
 
 class InvoiceEntryFixture {
 
+    static int number
+
     static InvoiceEntry getInvoiceEntryWithPersonalCar(int id) {
         boolean isPersonalCar = false;
         if(id % 2 == 0) {
@@ -12,8 +14,8 @@ class InvoiceEntryFixture {
         }
         return InvoiceEntry.builder()
                 .id(UUID.randomUUID())
-                .description("Product $id")
-                .price(BigDecimal.valueOf(200 * id))
+                .description("Product " + number++)
+                .price(BigDecimal.valueOf(200 * id).setScale(2))
                 .vatRate(Vat.VAT_23)
                 .personalCar(isPersonalCar)
                 .build()
@@ -30,8 +32,8 @@ class InvoiceEntryFixture {
     static InvoiceEntry getInvoiceEntry(int id) {
         return InvoiceEntry.builder()
                 .id(UUID.randomUUID())
-                .description("Product $id")
-                .price(BigDecimal.valueOf(200 * id))
+                .description("Product " + number++)
+                .price(BigDecimal.valueOf(200 * id).setScale(2))
                 .vatRate(Vat.VAT_23)
                 .personalCar(false)
                 .build()

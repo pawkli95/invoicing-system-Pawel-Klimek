@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.service
+package pl.futurecollars.invoicing.service.invoiceService
 
 import org.mapstruct.factory.Mappers
 import pl.futurecollars.invoicing.db.Database
@@ -6,6 +6,7 @@ import pl.futurecollars.invoicing.dto.InvoiceDto
 import pl.futurecollars.invoicing.dto.mappers.InvoiceMapper
 import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.service.InvoiceService
 import spock.lang.Specification
 import java.util.function.Predicate
 

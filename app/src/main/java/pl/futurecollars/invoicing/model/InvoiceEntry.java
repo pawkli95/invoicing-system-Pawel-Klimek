@@ -4,17 +4,16 @@ import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @AllArgsConstructor
@@ -41,7 +40,7 @@ public class InvoiceEntry {
 
     @Builder.Default
     @ApiModelProperty(value = "Value of VAT", required = true, example = "46")
-    private BigDecimal vatValue = BigDecimal.ZERO;
+    private BigDecimal vatValue = BigDecimal.ZERO.setScale(2);
 
     @ApiModelProperty(value = "Flag to mark car used for personal reasons", required = true, example = "true")
     private boolean personalCar;

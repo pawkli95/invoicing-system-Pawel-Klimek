@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.taxCalculatorController
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
@@ -41,6 +41,8 @@ abstract class TaxCalculatorControllerTest extends Specification {
 
     @Shared
     Company company1 = CompanyFixture.getCompany()
+    @Shared
+    Company company3 = CompanyFixture.getCompany()
 
     def "should calculate tax without personal car expenses"() {
         given:
