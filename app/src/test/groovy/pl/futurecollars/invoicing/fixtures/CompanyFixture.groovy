@@ -17,8 +17,8 @@ class CompanyFixture {
                .taxIdentificationNumber(taxId.toString())
                .name("Firma")
                .address("Firmowa 1")
-               .pensionInsurance(BigDecimal.valueOf(500))
-               .healthInsurance(BigDecimal.valueOf(1000))
+               .pensionInsurance(BigDecimal.valueOf(500.00).setScale(2))
+               .healthInsurance(BigDecimal.valueOf(1000.00).setScale(2))
                .build()
     }
 }

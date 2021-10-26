@@ -1,12 +1,12 @@
 package pl.futurecollars.invoicing.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

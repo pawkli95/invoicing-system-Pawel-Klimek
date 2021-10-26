@@ -11,14 +11,16 @@ import java.time.temporal.ChronoUnit
 class InvoiceFixture {
 
     static InvoiceMapper invoiceMapper = Mappers.getMapper(InvoiceMapper.class)
+    static int number = 0;
 
     static Invoice getInvoice() {
+        number++;
         return Invoice.builder()
                 .id(UUID.randomUUID())
                 .date(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES))
                 .seller(CompanyFixture.getCompany())
                 .buyer(CompanyFixture.getCompany())
-                .number("12/12/20002")
+                .number(String.valueOf(number))
                 .invoiceEntries(InvoiceEntryFixture.getInvoiceEntryListWithPersonalCar(4))
                 .build()
     }
@@ -28,6 +30,7 @@ class InvoiceFixture {
     }
 
     static Invoice getInvoiceWithoutId() {
+        number++;
         return Invoice.builder()
                 .number("12/12/20002")
                 .date(LocalDateTime.now())

@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.service
+package pl.futurecollars.invoicing.service.taxCalculatorService
 
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.fixtures.CompanyFixture
@@ -7,6 +7,7 @@ import pl.futurecollars.invoicing.fixtures.InvoiceFixture
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.dto.TaxCalculation
+import pl.futurecollars.invoicing.service.TaxCalculatorService
 import spock.lang.Specification
 
 import java.time.LocalDateTime

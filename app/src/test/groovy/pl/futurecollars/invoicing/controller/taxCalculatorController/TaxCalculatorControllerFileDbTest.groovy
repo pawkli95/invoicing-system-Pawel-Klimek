@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.taxCalculatorController
 
 import org.springframework.test.context.ActiveProfiles
 

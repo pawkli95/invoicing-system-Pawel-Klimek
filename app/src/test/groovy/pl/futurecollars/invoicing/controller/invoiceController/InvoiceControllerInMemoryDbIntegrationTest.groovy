@@ -1,7 +1,7 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.invoiceController
 
 import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("inmemoryTest")
+@ActiveProfiles("inmemory")
 class InvoiceControllerInMemoryDbIntegrationTest extends InvoiceControllerIntegrationTest {
 }

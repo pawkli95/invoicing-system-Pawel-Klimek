@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -11,9 +10,8 @@ import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.db.filebased.FileBasedDatabase;
 import pl.futurecollars.invoicing.db.jpa.JpaDatabase;
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase;
-import pl.futurecollars.invoicing.db.sql.InvoiceEntriesRowMapper;
-import pl.futurecollars.invoicing.db.sql.InvoiceRowMapper;
 import pl.futurecollars.invoicing.db.sql.SqlDatabase;
+import pl.futurecollars.invoicing.db.sql.rowmapper.InvoiceRowMapper;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.repositories.InvoiceRepository;
 import pl.futurecollars.invoicing.utils.FileService;
@@ -34,7 +32,7 @@ public class DatabaseConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "inmemory")
+    @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "memory")
     public Database<Invoice> getInMemoryDatabase() {
         log.info("Created inmemory database");
         return new InMemoryDatabase();
