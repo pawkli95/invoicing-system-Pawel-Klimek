@@ -14,7 +14,7 @@ import pl.futurecollars.invoicing.utils.JsonService;
 
 @Slf4j
 @Data
-public class FileBasedDatabase implements Database {
+public class FileBasedDatabase implements Database<Invoice> {
 
     private final JsonService<Invoice> jsonInvoiceService;
     private final FileService jsonFileService;
@@ -23,19 +23,11 @@ public class FileBasedDatabase implements Database {
     @Override
     public Invoice save(Invoice invoice) {
         if (invoice != null) {
-            makeSureInvoiceIdIsUnique(invoice);
             writeInvoiceToDatabase(invoice);
             log.debug("Added invoice to file database");
             return invoice;
         }
         return null;
-    }
-
-    private void makeSureInvoiceIdIsUnique(Invoice invoice) {
-        List<String> idsUsed = getIdList();
-        while (idsUsed.contains(invoice.getId().toString())) {
-            invoice.setId(UUID.randomUUID());
-        }
     }
 
     private List<String> getIdList() {
@@ -97,12 +89,12 @@ public class FileBasedDatabase implements Database {
     }
 
     @Override
-    public boolean delete(UUID id) throws NoSuchElementException {
+    public void delete(UUID id) throws NoSuchElementException {
         if (invoiceIdIsInDatabase(id)) {
             deleteInvoice(id);
             deleteId(id);
             log.debug("Deleted invoice by id: " + id.toString());
-            return true;
+            return;
         }
         throw new NoSuchElementException();
     }

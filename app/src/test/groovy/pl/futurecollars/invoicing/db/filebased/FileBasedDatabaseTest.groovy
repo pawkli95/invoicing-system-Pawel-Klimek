@@ -15,8 +15,6 @@ class FileBasedDatabaseTest extends DatabaseTest {
 
     @Override
     Database getDatabase() {
-        fileBasedDatabase.getJsonFileService().eraseFile()
-        fileBasedDatabase.getIdsFileService().eraseFile()
         return fileBasedDatabase
     }
 }

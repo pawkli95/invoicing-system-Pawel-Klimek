@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.futurecollars.invoicing.dto.TaxCalculation;
 import pl.futurecollars.invoicing.model.Company;
-import pl.futurecollars.invoicing.model.TaxCalculation;
 import pl.futurecollars.invoicing.service.TaxCalculatorService;
 
 @Api(tags = {"tax-calculator-controller"})

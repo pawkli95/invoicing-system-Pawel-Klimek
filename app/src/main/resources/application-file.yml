@@ -2,3 +2,6 @@ invoicing-system:
   database: file
   invoicesFile: app/src/main/resources/invoices1.json
   idsFile: app/src/main/resources/ids1.txt
+spring:
+  flyway:
+    enabled: false

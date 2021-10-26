@@ -8,38 +8,47 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.dto.InvoiceDto;
+import pl.futurecollars.invoicing.dto.mappers.InvoiceMapper;
 import pl.futurecollars.invoicing.model.Invoice;
 
 @RequiredArgsConstructor
 @Service
 public class InvoiceService {
 
-    private final Database fileBasedDatabase;
+    private final Database<Invoice> fileBasedDatabase;
+    private final InvoiceMapper invoiceMapper;
 
-    public Invoice saveInvoice(Invoice invoice) {
-        return fileBasedDatabase.save(invoice);
+    public InvoiceDto saveInvoice(InvoiceDto invoiceDto) {
+        Invoice invoice = invoiceMapper.toEntity(invoiceDto);
+        Invoice returnedInvoice = fileBasedDatabase.save(invoice);
+        return invoiceMapper.toDto(returnedInvoice);
     }
 
-    public Invoice getById(UUID id) throws NoSuchElementException {
-        return fileBasedDatabase.getById(id);
+    public InvoiceDto getById(UUID id) throws NoSuchElementException {
+        return invoiceMapper.toDto(fileBasedDatabase.getById(id));
     }
 
-    public List<Invoice> getAll() {
-        return fileBasedDatabase.getAll();
-    }
-
-    public List<Invoice> filter(Predicate<Invoice> predicate) {
-        return fileBasedDatabase.getAll()
-                .stream()
-                .filter(predicate)
+    public List<InvoiceDto> getAll() {
+        return fileBasedDatabase.getAll().stream()
+                .map(invoiceMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public Invoice updateInvoice(Invoice updatedInvoice) throws NoSuchElementException {
-        return fileBasedDatabase.update(updatedInvoice);
+    public List<InvoiceDto> filter(Predicate<Invoice> predicate) {
+        return fileBasedDatabase.getAll()
+                .stream()
+                .filter(predicate)
+                .map(invoiceMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public boolean deleteInvoice(UUID id) throws NoSuchElementException {
-        return fileBasedDatabase.delete(id);
+    public InvoiceDto updateInvoice(InvoiceDto updatedInvoice) throws NoSuchElementException {
+        Invoice returnedInvoice = fileBasedDatabase.update(invoiceMapper.toEntity(updatedInvoice));
+        return invoiceMapper.toDto(returnedInvoice);
+    }
+
+    public void deleteInvoice(UUID id) throws NoSuchElementException {
+        fileBasedDatabase.delete(id);
     }
 }
