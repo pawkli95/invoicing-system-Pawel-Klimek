@@ -18,7 +18,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "invoices")
 @Builder
 @AllArgsConstructor
 @Data
@@ -40,12 +42,12 @@ public class Invoice {
     @ApiModelProperty(value = "Date of invoice creation", required = true, example = "2021-09-10T14:49:35.9239111")
     private LocalDateTime date;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "seller_id", nullable = false)
     @ApiModelProperty(value = "Company who sold the product", required = true)
     private Company seller;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "buyer_id", nullable = false)
     @ApiModelProperty(value = "Company who bought the product", required = true)
     private Company buyer;

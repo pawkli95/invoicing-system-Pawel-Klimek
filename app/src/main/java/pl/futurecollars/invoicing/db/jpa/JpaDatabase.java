@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.repositories.InvoiceRepository;
 
 @Getter
 @RequiredArgsConstructor

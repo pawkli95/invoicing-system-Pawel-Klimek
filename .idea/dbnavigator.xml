@@ -26,13 +26,18 @@
     <show-object-properties value="false" />
     <loaded-nodes>
       <connection connection-id="cb8b3074-487a-49b1-851b-35075984e53a">
-        <schema name="public" object-types="table, view, sequence, function" />
+        <schema name="pg_catalog" object-types="table, view, function" />
+        <schema name="public" object-types="table, view, sequence, function, constraint, index, column, dataset trigger" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="cb8b3074-487a-49b1-851b-35075984e53a">
-      <console name="Connection2" type="STANDARD" schema="public" session="Pool" />
+      <console name="Connection2" type="STANDARD" schema="public" session="Pool"><![CDATA[insert into invoice_entries
+(id, description, invoice_id, personal_car, price, vat_rate, vat_value)
+values 
+('f76de595-58a1-4533-b96b-e493aee29e54',
+ 'nisdl', 'f76de595-58a1-4533-b96b-e493aee29e8b', true, 1.21, 'VAT_23', 0.3);]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
