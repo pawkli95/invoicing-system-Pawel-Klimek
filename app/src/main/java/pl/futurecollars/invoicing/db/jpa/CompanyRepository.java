@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.repositories;
+package pl.futurecollars.invoicing.db.jpa;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

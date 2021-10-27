@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27018
+      authentication-database: admin
+      username: mongoadmin
+      password: secret
+      database: invoicing
+
+invoicing-system:
+      database: mongo

@@ -4,8 +4,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.futurecollars.invoicing.db.jpa.CompanyRepository;
 import pl.futurecollars.invoicing.model.Company;
-import pl.futurecollars.invoicing.repositories.CompanyRepository;
 
 @Service
 @RequiredArgsConstructor

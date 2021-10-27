@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import pl.futurecollars.invoicing.model.InvoiceEntry;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InvoiceDto {
 
     @ApiModelProperty(value = "Id", example = "f77de595-58a1-4533-b96b-e493aee29e8a")
