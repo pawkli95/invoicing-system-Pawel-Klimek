@@ -9,16 +9,13 @@ import java.util.UUID;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-public class InMemoryDatabase implements Database {
+public class InMemoryDatabase implements Database<Invoice> {
 
     private final Map<UUID, Invoice> database = new HashMap<>();
 
     @Override
     public Invoice save(Invoice invoice) {
         if (invoice != null) {
-            while (database.containsKey(invoice.getId())) {
-                invoice.setId(UUID.randomUUID());
-            }
             database.put(invoice.getId(), invoice);
         }
         return invoice;
@@ -47,14 +44,10 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public boolean delete(UUID id) {
+    public void delete(UUID id) throws NoSuchElementException {
         if (database.containsKey(id)) {
-            try {
-                database.remove(id);
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
+            database.remove(id);
+            return;
         }
         throw new NoSuchElementException();
     }

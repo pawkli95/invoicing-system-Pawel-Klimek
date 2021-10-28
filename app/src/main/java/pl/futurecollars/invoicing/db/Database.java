@@ -3,17 +3,16 @@ package pl.futurecollars.invoicing.db;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import pl.futurecollars.invoicing.model.Invoice;
 
-public interface Database {
+public interface Database<T> {
 
-    Invoice save(Invoice invoice);
+    T save(T invoice);
 
-    Invoice getById(UUID id) throws NoSuchElementException;
+    T getById(UUID id) throws NoSuchElementException;
 
-    List<Invoice> getAll();
+    List<T> getAll();
 
-    Invoice update(Invoice updatedInvoice);
+    T update(T updatedEntity);
 
-    boolean delete(UUID id) throws NoSuchElementException;
+    void delete(UUID id) throws NoSuchElementException;
 }

@@ -2,6 +2,10 @@ invoicing-system:
   database: fileTest
   invoicesFile: src/test/resources/invoicesTest3.txt
   idsFile: src/test/resources/idsTest3.txt
+spring:
+  flyway:
+    enabled: false
+
 
 
 

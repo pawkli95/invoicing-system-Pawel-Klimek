@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27018
+      authentication-database: admin
+      username: mongoadmin
+      password: secret
+      database: invoicing
+  flyway:
+    enabled: false
+
+
+invoicing-system:
+      database: mongo
+
+

@@ -10,9 +10,14 @@ logging:
           db: DEBUG
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5555/postgres
     username: postgres
-    password: haslo
+    password: password
     driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: false
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        show_sql: true
+
+
