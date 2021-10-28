@@ -7,7 +7,7 @@ import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.DatabaseTest
 
 @SpringBootTest
-@ActiveProfiles("mongo")
+@ActiveProfiles("mongoTest")
 class MongoDatabaseTest extends DatabaseTest{
 
     @Autowired

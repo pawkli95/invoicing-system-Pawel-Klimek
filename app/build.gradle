@@ -53,6 +53,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.testcontainers:spock:1.16.2"
     testImplementation "org.testcontainers:postgresql:1.16.2"
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'

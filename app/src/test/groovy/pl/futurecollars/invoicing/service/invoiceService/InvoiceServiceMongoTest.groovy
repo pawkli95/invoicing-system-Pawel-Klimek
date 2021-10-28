@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.db.Database
 
 @SpringBootTest
-@ActiveProfiles("mongo")
+@ActiveProfiles("mongoTest")
 class InvoiceServiceMongoTest extends InvoiceServiceAbstractIntegrationTest{
 
     @Autowired
